@@ -38,4 +38,4 @@ class FieldRenderer extends React.Component {
   }
 }
 
-export default FieldRenderer
+export default FieldRenderer;
