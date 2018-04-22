@@ -6,13 +6,17 @@ import Yarfl from '../index';
 describe('Yarfl.Form', () => {
   test('renders the right content', () => {
     const render = () => 'form!';
-    const root = TestRenderer.create(<Yarfl.Form>{render}</Yarfl.Form>);
+    const root = TestRenderer.create(
+      <Yarfl.Form onSubmit={() => {}}>{render}</Yarfl.Form>
+    );
 
     expect(root.toJSON()).toBe('form!');
   });
 
   test("doesn't block renders when the render function changes", () => {
-    const App = ({ text }) => <Yarfl.Form>{() => text}</Yarfl.Form>;
+    const App = ({ text }) => (
+      <Yarfl.Form onSubmit={() => {}}>{() => text}</Yarfl.Form>
+    );
     const root = TestRenderer.create(<App text="before" />);
 
     expect(root.toJSON()).toBe('before');

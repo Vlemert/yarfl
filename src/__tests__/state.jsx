@@ -8,7 +8,9 @@ describe('Yarfl.State', () => {
     const renderState = jest.fn(() => null);
 
     TestRenderer.create(
-      <Yarfl.Form>{() => <Yarfl.State>{renderState}</Yarfl.State>}</Yarfl.Form>
+      <Yarfl.Form onSubmit={() => {}}>
+        {() => <Yarfl.State>{renderState}</Yarfl.State>}
+      </Yarfl.Form>
     );
 
     expect(renderState.mock.calls.length).toBe(1);
@@ -75,7 +77,9 @@ describe('Yarfl.State', () => {
       </React.Fragment>
     ));
 
-    TestRenderer.create(<Yarfl.Form>{renderForm}</Yarfl.Form>);
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={() => {}}>{renderForm}</Yarfl.Form>
+    );
 
     const formArgs = renderForm.mock.calls[0][0];
     formArgs.submit({
@@ -90,7 +94,7 @@ describe('Yarfl.State', () => {
     const renderState = jest.fn(() => null);
 
     TestRenderer.create(
-      <Yarfl.Form>
+      <Yarfl.Form onSubmit={() => {}}>
         {() => (
           <React.Fragment>
             <Yarfl.Field name="email">{renderField}</Yarfl.Field>

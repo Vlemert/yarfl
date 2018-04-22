@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { pathToArray, getFieldValues } from '../util/index';
 import { formReducer } from '../state/index';
@@ -18,13 +19,16 @@ class Form extends React.Component {
   submit = e => {
     e.preventDefault();
 
-    const values = getFieldValues(this.state.fields);
+    const { onSubmit } = this.props;
+    const { fields } = this.state;
+
+    const values = getFieldValues(fields);
 
     this.dispatch({
       type: 'submit'
     });
 
-    if (Object.values(this.state.fields).some(field => field.invalid)) {
+    if (Object.values(fields).some(field => field.invalid)) {
       this.dispatch({
         type: 'submit-failed',
         payload: {}
@@ -34,7 +38,7 @@ class Form extends React.Component {
 
     let submitResult;
     try {
-      submitResult = this.props.onSubmit(values);
+      submitResult = onSubmit(values);
     } catch (error) {
       this.dispatch({
         type: 'submit-failed',
@@ -66,7 +70,6 @@ class Form extends React.Component {
     if (!validate) return undefined;
 
     if (Array.isArray(validate)) {
-      // TODO: do we want to store an array, or just the first error?
       let error;
       for (const validator of validate) {
         error = validator(value);
@@ -146,5 +149,9 @@ class Form extends React.Component {
     );
   }
 }
+
+Form.propTypes = {
+  onSubmit: PropTypes.func.isRequired
+};
 
 export default Form;

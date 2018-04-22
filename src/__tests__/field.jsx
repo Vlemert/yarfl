@@ -10,7 +10,7 @@ describe('Yarfl.Field', () => {
       const renderPassword = jest.fn(() => null);
 
       TestRenderer.create(
-        <Yarfl.Form>
+        <Yarfl.Form onSubmit={() => {}}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
@@ -45,7 +45,7 @@ describe('Yarfl.Field', () => {
       const validatePassword = jest.fn(() => 'test error');
 
       TestRenderer.create(
-        <Yarfl.Form>
+        <Yarfl.Form onSubmit={() => {}}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email" validate={validateEmail}>
@@ -76,7 +76,7 @@ describe('Yarfl.Field', () => {
       test("does't reinitialize the value", () => {
         const renderEmail = jest.fn(() => null);
         const App = ({ renderTwice }) => (
-          <Yarfl.Form>
+          <Yarfl.Form onSubmit={() => {}}>
             {({}) => (
               <React.Fragment>
                 <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
@@ -112,7 +112,7 @@ describe('Yarfl.Field', () => {
       const renderEmail = jest.fn(() => null);
 
       TestRenderer.create(
-        <Yarfl.Form>
+        <Yarfl.Form onSubmit={() => {}}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
@@ -143,7 +143,7 @@ describe('Yarfl.Field', () => {
       const validateEmail = jest.fn();
 
       TestRenderer.create(
-        <Yarfl.Form>
+        <Yarfl.Form onSubmit={() => {}}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email" validate={validateEmail}>
@@ -178,7 +178,7 @@ describe('Yarfl.Field', () => {
       const renderEmail = jest.fn(() => null);
 
       TestRenderer.create(
-        <Yarfl.Form>
+        <Yarfl.Form onSubmit={() => {}}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
@@ -202,7 +202,7 @@ describe('Yarfl.Field', () => {
       const renderEmail = jest.fn(() => null);
 
       TestRenderer.create(
-        <Yarfl.Form>
+        <Yarfl.Form onSubmit={() => {}}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
@@ -230,7 +230,7 @@ describe('Yarfl.Field', () => {
       const validateEmail = jest.fn();
 
       TestRenderer.create(
-        <Yarfl.Form>
+        <Yarfl.Form onSubmit={() => {}}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email" validate={validateEmail}>
@@ -266,7 +266,7 @@ describe('Yarfl.Field', () => {
       const validateEmail = [jest.fn(), jest.fn()];
 
       TestRenderer.create(
-        <Yarfl.Form>
+        <Yarfl.Form onSubmit={() => {}}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email" validate={validateEmail}>

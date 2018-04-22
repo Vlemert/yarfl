@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { defaultFieldState } from '../state/index';
 import FieldRenderer from './field-renderer';
@@ -11,9 +12,9 @@ class Field extends React.Component {
     return (
       <Context.Consumer>
         {({
-            functions: { registerField, changeField, focusField, blurField },
-            fields
-          }) => {
+          functions: { registerField, changeField, focusField, blurField },
+          fields
+        }) => {
           const field = fields[name] || defaultFieldState;
 
           return (
@@ -33,5 +34,14 @@ class Field extends React.Component {
     );
   }
 }
+
+Field.propTypes = {
+  name: PropTypes.string.isRequired,
+  children: PropTypes.func.isRequired,
+  validate: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.func),
+    PropTypes.func
+  ])
+};
 
 export default Field;

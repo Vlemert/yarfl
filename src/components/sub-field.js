@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import Context from './context';
 
@@ -11,7 +12,7 @@ import Context from './context';
  *   TODO: optimize by not updating the context value if fields we don't care
  *   about change
  */
-const SubField = ({ children, name: subFieldName }) => (
+const SubField = ({ name: subFieldName, children }) => (
   <Context.Consumer>
     {({
       functions: { registerField, changeField, focusField, blurField },
@@ -41,5 +42,10 @@ const SubField = ({ children, name: subFieldName }) => (
     }}
   </Context.Consumer>
 );
+
+SubField.propTypes = {
+  name: PropTypes.string.isRequired,
+  children: PropTypes.node
+};
 
 export default SubField;
