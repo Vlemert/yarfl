@@ -1,9 +1,7 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
-import createForm from '../index';
-
-const MyForm = createForm();
+import Yarfl from '../index';
 
 describe('Yarfl', () => {
   test('basic submit', () => {
@@ -11,7 +9,7 @@ describe('Yarfl', () => {
     const handleSubmit = jest.fn();
 
     const root = TestRenderer.create(
-      <MyForm onSubmit={handleSubmit}>{render}</MyForm>
+      <Yarfl.Form onSubmit={handleSubmit}>{render}</Yarfl.Form>
     );
 
     expect(handleSubmit).not.toBeCalled();
@@ -32,14 +30,14 @@ describe('Yarfl', () => {
         const renderPassword = jest.fn(() => null);
 
         TestRenderer.create(
-          <MyForm>
+          <Yarfl.Form>
             {({}) => (
               <React.Fragment>
-                <MyForm.Field name="email">{renderEmail}</MyForm.Field>
-                <MyForm.Field name="password">{renderPassword}</MyForm.Field>
+                <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
+                <Yarfl.Field name="password">{renderPassword}</Yarfl.Field>
               </React.Fragment>
             )}
-          </MyForm>
+          </Yarfl.Form>
         );
 
         expect(renderEmail.mock.calls.length).toBe(1);
@@ -67,18 +65,18 @@ describe('Yarfl', () => {
         const validatePassword = jest.fn(() => 'test error');
 
         TestRenderer.create(
-          <MyForm>
+          <Yarfl.Form>
             {({}) => (
               <React.Fragment>
-                <MyForm.Field name="email" validate={validateEmail}>
+                <Yarfl.Field name="email" validate={validateEmail}>
                   {renderEmail}
-                </MyForm.Field>
-                <MyForm.Field name="password" validate={validatePassword}>
+                </Yarfl.Field>
+                <Yarfl.Field name="password" validate={validatePassword}>
                   {renderPassword}
-                </MyForm.Field>
+                </Yarfl.Field>
               </React.Fragment>
             )}
-          </MyForm>
+          </Yarfl.Form>
         );
 
         expect(validateEmail.mock.calls.length).toBe(1);
@@ -100,13 +98,13 @@ describe('Yarfl', () => {
         const renderEmail = jest.fn(() => null);
 
         TestRenderer.create(
-          <MyForm>
+          <Yarfl.Form>
             {({}) => (
               <React.Fragment>
-                <MyForm.Field name="email">{renderEmail}</MyForm.Field>
+                <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
               </React.Fragment>
             )}
-          </MyForm>
+          </Yarfl.Form>
         );
 
         const emailArgs = renderEmail.mock.calls[0][0];
@@ -131,15 +129,15 @@ describe('Yarfl', () => {
         const validateEmail = jest.fn();
 
         TestRenderer.create(
-          <MyForm>
+          <Yarfl.Form>
             {({}) => (
               <React.Fragment>
-                <MyForm.Field name="email" validate={validateEmail}>
+                <Yarfl.Field name="email" validate={validateEmail}>
                   {renderEmail}
-                </MyForm.Field>
+                </Yarfl.Field>
               </React.Fragment>
             )}
-          </MyForm>
+          </Yarfl.Form>
         );
 
         const emailArgs = renderEmail.mock.calls[0][0];
@@ -166,13 +164,13 @@ describe('Yarfl', () => {
         const renderEmail = jest.fn(() => null);
 
         TestRenderer.create(
-          <MyForm>
+          <Yarfl.Form>
             {({}) => (
               <React.Fragment>
-                <MyForm.Field name="email">{renderEmail}</MyForm.Field>
+                <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
               </React.Fragment>
             )}
-          </MyForm>
+          </Yarfl.Form>
         );
 
         const emailArgs = renderEmail.mock.calls[0][0];
@@ -193,15 +191,15 @@ describe('Yarfl', () => {
         const validateEmail = jest.fn();
 
         TestRenderer.create(
-          <MyForm>
+          <Yarfl.Form>
             {({}) => (
               <React.Fragment>
-                <MyForm.Field name="email" validate={validateEmail}>
+                <Yarfl.Field name="email" validate={validateEmail}>
                   {renderEmail}
-                </MyForm.Field>
+                </Yarfl.Field>
               </React.Fragment>
             )}
-          </MyForm>
+          </Yarfl.Form>
         );
 
         const emailArgs = renderEmail.mock.calls[0][0];

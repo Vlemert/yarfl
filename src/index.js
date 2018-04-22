@@ -1,9 +1,9 @@
 import React from 'react';
 
-import createFormComponent from './components/form';
-import createStateComponent from './components/state';
-import createFieldComponent from './components/field';
-import createSubFieldComponent from './components/sub-field';
+import Form from './components/form';
+import State from './components/state';
+import Field from './components/field';
+import SubField from './components/sub-field';
 
 /**
  * GENERIC TODO LIST:
@@ -16,15 +16,9 @@ import createSubFieldComponent from './components/sub-field';
  *
  */
 
-function createForm() {
-  const Context = React.createContext({});
-
-  const Form = createFormComponent(Context);
-  Form.Field = createFieldComponent(Context);
-  Form.State = createStateComponent(Context);
-  Form.SubField = createSubFieldComponent(Context);
-
-  return Form;
-}
-
-export default createForm;
+export default {
+  Form,
+  Field,
+  State,
+  SubField
+};
