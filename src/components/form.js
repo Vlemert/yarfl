@@ -32,8 +32,17 @@ class Form extends React.Component {
       return;
     }
 
-    // TODO: this might throw?
-    const submitResult = this.props.onSubmit(values);
+    let submitResult;
+    try {
+      submitResult = this.props.onSubmit(values);
+    } catch (error) {
+      this.dispatch({
+        type: 'submit-failed',
+        payload: {
+          error
+        }
+      });
+    }
 
     // TODO: this can cause react errors if the component unmounts
     Promise.resolve(submitResult).then(

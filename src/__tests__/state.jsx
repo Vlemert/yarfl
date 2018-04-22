@@ -16,12 +16,38 @@ describe('Yarfl.State', () => {
     expect(stateArgs.error).toBeUndefined();
   });
 
-  test('rerenders when a form fails to submit', async () => {
+  test('rerenders when a form fails to submit (rejected promise)', async () => {
     const renderForm = jest.fn(() => <Yarfl.State>{renderState}</Yarfl.State>);
     const renderState = jest.fn(() => null);
 
     TestRenderer.create(
       <Yarfl.Form onSubmit={() => Promise.reject('test error')}>
+        {renderForm}
+      </Yarfl.Form>
+    );
+
+    const formArgs = renderForm.mock.calls[0][0];
+    formArgs.submit({
+      preventDefault: () => {}
+    });
+
+    await new Promise(setImmediate);
+
+    expect(renderState.mock.calls.length).toBe(2);
+    const stateArgs = renderState.mock.calls[1][0];
+    expect(stateArgs.error).toBe('test error');
+  });
+
+  test('rerenders when a form fails to submit (thrown error)', async () => {
+    const renderForm = jest.fn(() => <Yarfl.State>{renderState}</Yarfl.State>);
+    const renderState = jest.fn(() => null);
+
+    TestRenderer.create(
+      <Yarfl.Form
+        onSubmit={() => {
+          throw 'test error';
+        }}
+      >
         {renderForm}
       </Yarfl.Form>
     );
