@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { pathToArray } from '../util/index';
+import { pathToArray, getFieldValues } from '../util/index';
 import { formReducer } from '../state/index';
 import FormRenderer from './form-renderer';
 import Context from './context';
@@ -18,13 +18,7 @@ class Form extends React.Component {
   submit = e => {
     e.preventDefault();
 
-    const values = Object.entries(this.state.fields).reduce(
-      (values, [key, field]) => {
-        values[key] = field.value;
-        return values;
-      },
-      {}
-    );
+    const values = getFieldValues(this.state.fields);
 
     this.dispatch({
       type: 'submit'

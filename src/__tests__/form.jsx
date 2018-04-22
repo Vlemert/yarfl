@@ -36,8 +36,56 @@ describe('Yarfl.Form', () => {
     };
     render.mock.calls[0][0].submit(e);
 
-    expect(handleSubmit).toBeCalled();
+    expect(handleSubmit.mock.calls.length).toBe(1);
     expect(e.preventDefault).toBeCalled();
     expect(render.mock.calls.length).toBe(1);
+  });
+
+  test('passes form values to handleSubmit', () => {
+    const renderEmail = jest.fn(() => null);
+    const renderPassword = jest.fn(() => null);
+    const renderThings = jest.fn(() => null);
+    const renderForm = jest.fn(() => (
+      <React.Fragment>
+        <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
+        <Yarfl.Field name="password">{renderPassword}</Yarfl.Field>
+        <Yarfl.SubField name="nested">
+          <Yarfl.Field name="things">{renderThings}</Yarfl.Field>
+        </Yarfl.SubField>
+      </React.Fragment>
+    ));
+    const handleSubmit = jest.fn();
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={handleSubmit}>{renderForm}</Yarfl.Form>
+    );
+
+    renderEmail.mock.calls[0][0].input.onChange({
+      target: {
+        value: 'example@email.com'
+      }
+    });
+    renderPassword.mock.calls[0][0].input.onChange({
+      target: {
+        value: 'superSafePassw0rd'
+      }
+    });
+    renderThings.mock.calls[0][0].input.onChange({
+      target: {
+        value: 'some nested value'
+      }
+    });
+    const e = {
+      preventDefault: jest.fn()
+    };
+    renderForm.mock.calls[0][0].submit(e);
+
+    expect(handleSubmit).toBeCalledWith({
+      email: 'example@email.com',
+      password: 'superSafePassw0rd',
+      nested: {
+        things: 'some nested value'
+      }
+    });
   });
 });
