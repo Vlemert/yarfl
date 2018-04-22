@@ -86,7 +86,7 @@ const SimpleForm = () => (
 )
 ```
 
-#### Render props
+#### Props passed to the render function
 
 ##### submit
 
@@ -107,3 +107,36 @@ the returned error will be passed to `<Yarfl.State>`
 ### <Yarfl.SubField />
 
 ### <Yarfl.State />
+
+Use this component to access the state of a form. This component will not
+receive the state of individual fields, use `Yarfl.Field` for that.
+`Yarfl.State` expects a render function to be passed to `children`.
+
+```
+import React from 'react';
+import Yarfl from 'yarfl';
+
+const SimpleForm = () => (
+  <Yarfl.Form
+    onSubmit={(values) => {
+      // handle submit here
+    }}
+  >
+    {({ submit }) => (
+      <form onSubmit={submit}>
+        <Yarfl.State>
+          {({ error }) => error && `An error occurred: ${error}`}
+        </Yarfl.State>
+        <button type="submit">Login</button>
+      </form>
+    )}
+  </Yarfl.Form>
+)
+```
+
+#### Props passed to the render function
+
+##### error
+
+Whenever an error is thrown in `onSubmit`, that error will be passed here.
+`undefined` if no failed form submission occurred yet.
