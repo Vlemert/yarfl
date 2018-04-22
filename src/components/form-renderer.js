@@ -28,4 +28,4 @@ class FormRenderer extends React.Component {
   }
 }
 
-export default FormRenderer
+export default FormRenderer;
