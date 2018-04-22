@@ -40,19 +40,21 @@ describe('Yarfl.State', () => {
 
   test("doesn't rerender if validation fails on submit", async () => {
     const renderState = jest.fn(() => null);
+    const renderForm = jest.fn(() => (
+      <React.Fragment>
+        <Yarfl.Field name="email" validate={() => 'error'}>
+          {() => null}
+        </Yarfl.Field>
+        <Yarfl.State>{renderState}</Yarfl.State>
+      </React.Fragment>
+    ));
 
-    TestRenderer.create(
-      <Yarfl.Form>
-        {() => (
-          <React.Fragment>
-            <Yarfl.Field name="email" validate={() => 'error'}>
-              {() => null}
-            </Yarfl.Field>
-            <Yarfl.State>{renderState}</Yarfl.State>
-          </React.Fragment>
-        )}
-      </Yarfl.Form>
-    );
+    TestRenderer.create(<Yarfl.Form>{renderForm}</Yarfl.Form>);
+
+    const formArgs = renderForm.mock.calls[0][0];
+    formArgs.submit({
+      preventDefault: () => {}
+    });
 
     expect(renderState.mock.calls.length).toBe(1);
   });
