@@ -14,10 +14,10 @@ const fieldReducer = (state = defaultFieldState, action = {}) => {
       // We don't want to cause an extra render on registration if it's not
       // needed
       if (
-        action.payload.value === defaultFieldState.value &&
-        action.payload.error === defaultFieldState.error
+        action.payload.value === state.value &&
+        action.payload.error === state.error
       ) {
-        return defaultFieldState;
+        return state;
       }
       return {
         ...state,

@@ -5,8 +5,9 @@ import FormRenderer from './form-renderer';
 
 class FieldRenderer extends React.Component {
   componentDidMount() {
-    const { name, validate, registerField } = this.props;
-    registerField(name, defaultFieldState.value, validate);
+    const { name, validate, registerField, field } = this.props;
+    const { value } = field;
+    registerField(name, value || defaultFieldState.value, validate);
   }
 
   onChange = e => {
