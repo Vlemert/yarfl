@@ -4,7 +4,7 @@ import { pathToArray } from '../util/index';
 import { formReducer } from '../state/index';
 import FormRenderer from './form-renderer';
 
-const createFormComponent = (Context) => {
+const createFormComponent = Context => {
   class Form extends React.Component {
     // TODO: we need to come up with a better state update strategy. The way we
     // update now causes updates even when nothing changes (fieldsReducer returns
@@ -38,7 +38,11 @@ const createFormComponent = (Context) => {
         return;
       }
 
-      this.props.onSubmit(values).then(
+      // TODO: this might throw?
+      const submitResult = this.props.onSubmit(values);
+
+      // TODO: this can cause react errors if the component unmounts
+      Promise.resolve(submitResult).then(
         result => {
           this.dispatch({
             type: 'submit-success'
@@ -135,7 +139,7 @@ const createFormComponent = (Context) => {
     }
   }
 
-  return Form
-}
+  return Form;
+};
 
-export default createFormComponent
+export default createFormComponent;

@@ -1,36 +1,49 @@
 import React from 'react';
 
+import { defaultFieldState } from '../state/index';
 import FormRenderer from './form-renderer';
 
 class FieldRenderer extends React.Component {
   componentDidMount() {
-    this.props.onMount();
+    const { name, validate, registerField } = this.props;
+    registerField(name, defaultFieldState.value, validate);
   }
 
+  onChange = e => {
+    const { name, validate, changeField } = this.props;
+    // TODO: check here if this is an event or value. Is that possible?
+    const value = e.target.value;
+    changeField(name, value, validate);
+  };
+
+  onFocus = e => {
+    const { name, focusField } = this.props;
+    focusField(name);
+  };
+
+  onBlur = e => {
+    const { name, validate, blurField } = this.props;
+    // TODO: check here if this is an event or value. Is that possible?
+    const value = e.target.value;
+    blurField(name, value, validate);
+  };
+
   render() {
-    const {
-      render,
-      onChange,
-      onFocus,
-      onBlur,
-      value,
-      name,
-      meta,
-      field
-    } = this.props;
+    const { render, name, field } = this.props;
+    const { value, ...fieldState } = field;
 
     return (
       <FormRenderer
         render={render}
         props={{
           input: {
-            onChange,
-            onFocus,
-            onBlur,
-            value,
-            name
+            onChange: this.onChange,
+            onFocus: this.onFocus,
+            onBlur: this.onBlur,
+            name,
+            value
           },
-          meta
+          ...fieldState
         }}
         trigger={field}
       />

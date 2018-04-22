@@ -10,7 +10,23 @@ const defaultFieldState = {
 };
 const fieldReducer = (state = defaultFieldState, action = {}) => {
   switch (action.type) {
-    case 'register':
+    case 'register': {
+      // We don't want to cause an extra render on registration if it's not
+      // needed
+      if (
+        action.payload.value === defaultFieldState.value &&
+        action.payload.error === defaultFieldState.error
+      ) {
+        return defaultFieldState;
+      }
+      return {
+        ...state,
+        value: action.payload.value,
+        error: action.payload.error,
+        invalid: !!action.payload.error,
+        valid: !action.payload.error
+      };
+    }
     case 'change':
       return {
         ...state,
@@ -123,4 +139,4 @@ const formReducer = (state = defaultFormState, action = {}) => {
   }
 };
 
-export { defaultFieldState, formReducer }
+export { defaultFieldState, formReducer };

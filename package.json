@@ -15,7 +15,8 @@
     "build:es:watch": "yarn build:es --watch",
     "build": "yarn build:es & yarn build:commonjs",
     "build:commonjs": "rollup --config rollup.config.js",
-    "build:es": "babel -d es/ --ignore /__tests__/ src/ "
+    "build:es": "babel -d es/ --ignore /__tests__/ src/ ",
+    "test:watch": "jest  --config=./test/jest.config.dev.js --watch"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -26,7 +27,9 @@
     "babel-preset-es2015-rollup": "^3.0.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-3": "^6.24.1",
+    "jest": "^22.4.3",
     "prettier": "^1.12.1",
+    "react-test-renderer": "^16.3.2",
     "rollup": "^0.58.0",
     "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-uglify": "^3.0.0"
