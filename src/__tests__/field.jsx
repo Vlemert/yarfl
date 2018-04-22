@@ -259,4 +259,60 @@ describe('Yarfl.Field', () => {
       expect(updatedEmailArgs.invalid).toBe(true);
     });
   });
+
+  describe('validate', () => {
+    test('works with an array', () => {
+      const renderEmail = jest.fn(() => null);
+      const validateEmail = [jest.fn(), jest.fn()];
+
+      TestRenderer.create(
+        <Yarfl.Form>
+          {({}) => (
+            <React.Fragment>
+              <Yarfl.Field name="email" validate={validateEmail}>
+                {renderEmail}
+              </Yarfl.Field>
+            </React.Fragment>
+          )}
+        </Yarfl.Form>
+      );
+
+      expect(validateEmail[0].mock.calls.length).toBe(1);
+      expect(validateEmail[1].mock.calls.length).toBe(1);
+
+      const emailArgs = renderEmail.mock.calls[0][0];
+      const emailOnChange = emailArgs.input.onChange;
+
+      validateEmail[0].mockImplementationOnce(() => 'test error');
+      emailOnChange({
+        target: {
+          value: 'changed text'
+        }
+      });
+
+      expect(validateEmail[0].mock.calls.length).toBe(2);
+      expect(validateEmail[1].mock.calls.length).toBe(1);
+      expect(validateEmail[0]).toBeCalledWith('changed text');
+      const updatedEmailArgs = renderEmail.mock.calls[1][0];
+      expect(updatedEmailArgs.error).toBe('test error');
+      expect(updatedEmailArgs.valid).toBe(false);
+      expect(updatedEmailArgs.invalid).toBe(true);
+
+      validateEmail[1].mockImplementationOnce(() => 'test error 2');
+      emailOnChange({
+        target: {
+          value: 'new changed text'
+        }
+      });
+
+      expect(validateEmail[0].mock.calls.length).toBe(3);
+      expect(validateEmail[1].mock.calls.length).toBe(2);
+      expect(validateEmail[0]).toBeCalledWith('new changed text');
+      expect(validateEmail[1]).toBeCalledWith('new changed text');
+      const updatedEmailArgs2 = renderEmail.mock.calls[2][0];
+      expect(updatedEmailArgs2.error).toBe('test error 2');
+      expect(updatedEmailArgs2.valid).toBe(false);
+      expect(updatedEmailArgs2.invalid).toBe(true);
+    });
+  });
 });

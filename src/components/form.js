@@ -67,7 +67,12 @@ class Form extends React.Component {
 
     if (Array.isArray(validate)) {
       // TODO: do we want to store an array, or just the first error?
-      return validate.map(val => val(value));
+      let error;
+      for (const validator of validate) {
+        error = validator(value);
+        if (error) break;
+      }
+      return error;
     }
 
     return validate(value);
