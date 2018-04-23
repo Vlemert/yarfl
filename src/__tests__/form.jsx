@@ -1,13 +1,14 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
+import { noop, nullRender } from './util';
 import Yarfl from '../index';
 
 describe('Yarfl.Form', () => {
   test('renders the right content', () => {
     const render = () => 'form!';
     const root = TestRenderer.create(
-      <Yarfl.Form onSubmit={() => {}}>{render}</Yarfl.Form>
+      <Yarfl.Form onSubmit={noop}>{render}</Yarfl.Form>
     );
 
     expect(root.toJSON()).toBe('form!');
@@ -15,7 +16,7 @@ describe('Yarfl.Form', () => {
 
   test("doesn't block renders when the render function changes", () => {
     const App = ({ text }) => (
-      <Yarfl.Form onSubmit={() => {}}>{() => text}</Yarfl.Form>
+      <Yarfl.Form onSubmit={noop}>{() => text}</Yarfl.Form>
     );
     const root = TestRenderer.create(<App text="before" />);
 
@@ -26,7 +27,7 @@ describe('Yarfl.Form', () => {
   });
 
   test('handles basic submit', () => {
-    const render = jest.fn(() => null);
+    const render = jest.fn(nullRender);
     const handleSubmit = jest.fn();
 
     TestRenderer.create(
@@ -46,9 +47,9 @@ describe('Yarfl.Form', () => {
   });
 
   test('passes form values to handleSubmit', () => {
-    const renderEmail = jest.fn(() => null);
-    const renderPassword = jest.fn(() => null);
-    const renderThings = jest.fn(() => null);
+    const renderEmail = jest.fn(nullRender);
+    const renderPassword = jest.fn(nullRender);
+    const renderThings = jest.fn(nullRender);
     const renderForm = jest.fn(() => (
       <React.Fragment>
         <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>

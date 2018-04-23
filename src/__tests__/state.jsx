@@ -1,14 +1,15 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
+import { noop, nullRender } from './util';
 import Yarfl from '../index';
 
 describe('Yarfl.State', () => {
   test('provides the state of the form on render', () => {
-    const renderState = jest.fn(() => null);
+    const renderState = jest.fn(nullRender);
 
     TestRenderer.create(
-      <Yarfl.Form onSubmit={() => {}}>
+      <Yarfl.Form onSubmit={noop}>
         {() => <Yarfl.State>{renderState}</Yarfl.State>}
       </Yarfl.Form>
     );
@@ -20,7 +21,7 @@ describe('Yarfl.State', () => {
 
   test('rerenders when a form fails to submit (rejected promise)', async () => {
     const renderForm = jest.fn(() => <Yarfl.State>{renderState}</Yarfl.State>);
-    const renderState = jest.fn(() => null);
+    const renderState = jest.fn(nullRender);
 
     TestRenderer.create(
       <Yarfl.Form onSubmit={() => Promise.reject('test error')}>
@@ -30,7 +31,7 @@ describe('Yarfl.State', () => {
 
     const formArgs = renderForm.mock.calls[0][0];
     formArgs.submit({
-      preventDefault: () => {}
+      preventDefault: noop
     });
 
     await new Promise(setImmediate);
@@ -42,7 +43,7 @@ describe('Yarfl.State', () => {
 
   test('rerenders when a form fails to submit (thrown error)', async () => {
     const renderForm = jest.fn(() => <Yarfl.State>{renderState}</Yarfl.State>);
-    const renderState = jest.fn(() => null);
+    const renderState = jest.fn(nullRender);
 
     TestRenderer.create(
       <Yarfl.Form
@@ -56,7 +57,7 @@ describe('Yarfl.State', () => {
 
     const formArgs = renderForm.mock.calls[0][0];
     formArgs.submit({
-      preventDefault: () => {}
+      preventDefault: noop
     });
 
     await new Promise(setImmediate);
@@ -67,34 +68,32 @@ describe('Yarfl.State', () => {
   });
 
   test("doesn't rerender if validation fails on submit", async () => {
-    const renderState = jest.fn(() => null);
+    const renderState = jest.fn(nullRender);
     const renderForm = jest.fn(() => (
       <React.Fragment>
         <Yarfl.Field name="email" validate={() => 'error'}>
-          {() => null}
+          {nullRender}
         </Yarfl.Field>
         <Yarfl.State>{renderState}</Yarfl.State>
       </React.Fragment>
     ));
 
-    TestRenderer.create(
-      <Yarfl.Form onSubmit={() => {}}>{renderForm}</Yarfl.Form>
-    );
+    TestRenderer.create(<Yarfl.Form onSubmit={noop}>{renderForm}</Yarfl.Form>);
 
     const formArgs = renderForm.mock.calls[0][0];
     formArgs.submit({
-      preventDefault: () => {}
+      preventDefault: noop
     });
 
     expect(renderState.mock.calls.length).toBe(1);
   });
 
   test("doesn't rerender if a field changes", () => {
-    const renderField = jest.fn(() => null);
-    const renderState = jest.fn(() => null);
+    const renderField = jest.fn(nullRender);
+    const renderState = jest.fn(nullRender);
 
     TestRenderer.create(
-      <Yarfl.Form onSubmit={() => {}}>
+      <Yarfl.Form onSubmit={noop}>
         {() => (
           <React.Fragment>
             <Yarfl.Field name="email">{renderField}</Yarfl.Field>

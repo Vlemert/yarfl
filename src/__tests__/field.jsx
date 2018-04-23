@@ -1,17 +1,18 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
+import { noop, nullRender } from './util';
 import Yarfl from '../index';
 
 describe('Yarfl.Field', () => {
   describe('on initialization', () => {
     test('gets the right value', () => {
-      const renderEmail = jest.fn(() => null);
-      const renderPassword = jest.fn(() => null);
-      const renderRemember = jest.fn(() => null);
+      const renderEmail = jest.fn(nullRender);
+      const renderPassword = jest.fn(nullRender);
+      const renderRemember = jest.fn(nullRender);
 
       TestRenderer.create(
-        <Yarfl.Form onSubmit={() => {}}>
+        <Yarfl.Form onSubmit={noop}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
@@ -53,13 +54,13 @@ describe('Yarfl.Field', () => {
     });
 
     test('validates', () => {
-      const renderEmail = jest.fn(() => null);
-      const renderPassword = jest.fn(() => null);
+      const renderEmail = jest.fn(nullRender);
+      const renderPassword = jest.fn(nullRender);
       const validateEmail = jest.fn();
       const validatePassword = jest.fn(() => 'test error');
 
       TestRenderer.create(
-        <Yarfl.Form onSubmit={() => {}}>
+        <Yarfl.Form onSubmit={noop}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email" validate={validateEmail}>
@@ -88,18 +89,18 @@ describe('Yarfl.Field', () => {
 
     describe('if a field with the same name already exists', () => {
       test("does't reinitialize the value", () => {
-        const renderEmail = jest.fn(() => null);
+        const renderEmail = jest.fn(nullRender);
         const App = ({ renderTwice, renderThreeTimes }) => (
-          <Yarfl.Form onSubmit={() => {}}>
+          <Yarfl.Form onSubmit={noop}>
             {({}) => (
               <React.Fragment>
                 <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
                 {renderTwice && (
-                  <Yarfl.Field name="email">{() => null}</Yarfl.Field>
+                  <Yarfl.Field name="email">{nullRender}</Yarfl.Field>
                 )}
                 {renderThreeTimes && (
                   <Yarfl.Field name="email" initialValue="some third value">
-                    {() => null}
+                    {nullRender}
                   </Yarfl.Field>
                 )}
               </React.Fragment>
@@ -131,10 +132,10 @@ describe('Yarfl.Field', () => {
 
   describe('onChange', () => {
     test('handled and causes rerender', () => {
-      const renderEmail = jest.fn(() => null);
+      const renderEmail = jest.fn(nullRender);
 
       TestRenderer.create(
-        <Yarfl.Form onSubmit={() => {}}>
+        <Yarfl.Form onSubmit={noop}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
@@ -161,11 +162,11 @@ describe('Yarfl.Field', () => {
     });
 
     test('causes validate to be called', () => {
-      const renderEmail = jest.fn(() => null);
+      const renderEmail = jest.fn(nullRender);
       const validateEmail = jest.fn();
 
       TestRenderer.create(
-        <Yarfl.Form onSubmit={() => {}}>
+        <Yarfl.Form onSubmit={noop}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email" validate={validateEmail}>
@@ -197,10 +198,10 @@ describe('Yarfl.Field', () => {
 
   describe('onFocus', () => {
     test('handled and causes rerender', () => {
-      const renderEmail = jest.fn(() => null);
+      const renderEmail = jest.fn(nullRender);
 
       TestRenderer.create(
-        <Yarfl.Form onSubmit={() => {}}>
+        <Yarfl.Form onSubmit={noop}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
@@ -221,10 +222,10 @@ describe('Yarfl.Field', () => {
 
   describe('onBlur', () => {
     test('handled and causes rerender', () => {
-      const renderEmail = jest.fn(() => null);
+      const renderEmail = jest.fn(nullRender);
 
       TestRenderer.create(
-        <Yarfl.Form onSubmit={() => {}}>
+        <Yarfl.Form onSubmit={noop}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
@@ -248,11 +249,11 @@ describe('Yarfl.Field', () => {
     });
 
     test('causes validate to be called', () => {
-      const renderEmail = jest.fn(() => null);
+      const renderEmail = jest.fn(nullRender);
       const validateEmail = jest.fn();
 
       TestRenderer.create(
-        <Yarfl.Form onSubmit={() => {}}>
+        <Yarfl.Form onSubmit={noop}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email" validate={validateEmail}>
@@ -284,11 +285,11 @@ describe('Yarfl.Field', () => {
 
   describe('validate', () => {
     test('works with an array', () => {
-      const renderEmail = jest.fn(() => null);
+      const renderEmail = jest.fn(nullRender);
       const validateEmail = [jest.fn(), jest.fn()];
 
       TestRenderer.create(
-        <Yarfl.Form onSubmit={() => {}}>
+        <Yarfl.Form onSubmit={noop}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email" validate={validateEmail}>

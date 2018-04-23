@@ -1,14 +1,14 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
+import { noop, nullRender } from './util';
 import Yarfl from '../index';
 
 describe('Yarfl.SubField', () => {
   test('groups the values of multiple fields together', () => {
-    const renderAddress = jest.fn(() => null);
-    const renderStreetName = jest.fn(() => null);
-    const renderStreetNumber = jest.fn(() => null);
-    const renderZip = jest.fn(() => null);
+    const renderStreetName = jest.fn(nullRender);
+    const renderStreetNumber = jest.fn(nullRender);
+    const renderZip = jest.fn(nullRender);
     const renderForm = jest.fn(() => (
       <Yarfl.SubField name="address">
         <Yarfl.SubField name="street">
@@ -52,7 +52,7 @@ describe('Yarfl.SubField', () => {
     expect(renderZip.mock.calls.length).toBe(2);
 
     renderForm.mock.calls[0][0].submit({
-      preventDefault: () => {}
+      preventDefault: noop
     });
     expect(handleSubmit).toBeCalledWith({
       address: {
@@ -66,11 +66,11 @@ describe('Yarfl.SubField', () => {
   });
 
   test('allows lower fields to track their own states', () => {
-    const renderStreet = jest.fn(() => null);
-    const renderZip = jest.fn(() => null);
+    const renderStreet = jest.fn(nullRender);
+    const renderZip = jest.fn(nullRender);
 
     TestRenderer.create(
-      <Yarfl.Form onSubmit={() => {}}>
+      <Yarfl.Form onSubmit={noop}>
         {() => (
           <Yarfl.SubField name="address">
             <Yarfl.Field name="street">{renderStreet}</Yarfl.Field>
