@@ -176,6 +176,36 @@ Either a validation function, or an array of validation functions.
 
 ### <Yarfl.SubField />
 
+Use this component to create a section in your form.
+
+```js
+import React from 'react';
+import Yarfl from 'yarfl';
+
+const SimpleForm = () => (
+  <Yarfl.Form
+    onSubmit={values => {
+      // values = { name: '', address: { street: '', zip: '' } }
+    }}
+  >
+    {({ submit }) => (
+      <form onSubmit={submit}>
+        <Yarfl.Field name="name">{/* */}</Yarfl.Field>
+        <Yarfl.SubField name="address">
+          <Yarfl.Field name="street">{/* */}</Yarfl.Field>
+          <Yarfl.Field name="zip">{/* */}</Yarfl.Field>
+        </Yarfl.SubField>
+        <button type="submit">Login</button>
+      </form>
+    )}
+  </Yarfl.Form>
+);
+```
+
+##### name
+
+Name of the section.
+
 ### <Yarfl.State />
 
 Use this component to access the state of a form. This component will not
