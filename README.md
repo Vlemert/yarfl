@@ -16,22 +16,17 @@ yarn add yarfl
 
 ## Basic usage
 
-```
+```js
 import React from 'react';
 import Yarfl from 'yarfl';
 
-const required = value => value ? undefined : 'Required field';
+const required = value => (value ? undefined : 'Required field');
 
 const LoginForm = ({ doLogin }) => (
-  <Yarfl.Form
-    onSubmit={doLogin}
-  >
+  <Yarfl.Form onSubmit={doLogin}>
     {({ submit }) => (
       <form onSubmit={submit}>
-        <Yarfl.Field
-          name="username"
-          validate={required}
-        >
+        <Yarfl.Field name="username" validate={required}>
           {({ input, touched, error }) => (
             <div>
               {touched && error}
@@ -39,10 +34,7 @@ const LoginForm = ({ doLogin }) => (
             </div>
           )}
         </Yarfl.Field>
-        <Yarfl.Field
-          name="password"
-          validate={required}
-        >
+        <Yarfl.Field name="password" validate={required}>
           {({ input, touched, error }) => (
             <div>
               {touched && error}
@@ -54,7 +46,7 @@ const LoginForm = ({ doLogin }) => (
       </form>
     )}
   </Yarfl.Form>
-)
+);
 ```
 
 ## API
@@ -67,13 +59,13 @@ expects a render function to be passed to `children`. For performance reasons,
 this function will only be called if the function itself changes, and thus does
 not receive any form state.
 
-```
+```js
 import React from 'react';
 import Yarfl from 'yarfl';
 
 const SimpleForm = () => (
   <Yarfl.Form
-    onSubmit={(values) => {
+    onSubmit={values => {
       // handle submit here
     }}
   >
@@ -83,7 +75,7 @@ const SimpleForm = () => (
       </form>
     )}
   </Yarfl.Form>
-)
+);
 ```
 
 #### Props passed to the render function
@@ -112,13 +104,13 @@ Use this component to access the state of a form. This component will not
 receive the state of individual fields, use `Yarfl.Field` for that.
 `Yarfl.State` expects a render function to be passed to `children`.
 
-```
+```js
 import React from 'react';
 import Yarfl from 'yarfl';
 
 const SimpleForm = () => (
   <Yarfl.Form
-    onSubmit={(values) => {
+    onSubmit={values => {
       // handle submit here
     }}
   >
@@ -131,7 +123,7 @@ const SimpleForm = () => (
       </form>
     )}
   </Yarfl.Form>
-)
+);
 ```
 
 #### Props passed to the render function
