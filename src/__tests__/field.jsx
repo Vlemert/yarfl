@@ -8,13 +8,19 @@ describe('Yarfl.Field', () => {
     test('gets the right value', () => {
       const renderEmail = jest.fn(() => null);
       const renderPassword = jest.fn(() => null);
+      const renderRemember = jest.fn(() => null);
 
       TestRenderer.create(
         <Yarfl.Form onSubmit={() => {}}>
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
-              <Yarfl.Field name="password">{renderPassword}</Yarfl.Field>
+              <Yarfl.Field name="password" initialValue="">
+                {renderPassword}
+              </Yarfl.Field>
+              <Yarfl.Field name="remember" initialValue="yes">
+                {renderRemember}
+              </Yarfl.Field>
             </React.Fragment>
           )}
         </Yarfl.Form>
@@ -36,6 +42,14 @@ describe('Yarfl.Field', () => {
       const passwordArgs = renderPassword.mock.calls[0][0];
       expect(passwordArgs.input.name).toBe('password');
       expect(passwordArgs.input.value).toBe('');
+
+      // TODO: ideally this should be 1, but then we'd have to make the
+      // mechanism that prevents re-rendering in FormRenderer smarter (shallow
+      // equal 'trigger'?)
+      expect(renderRemember.mock.calls.length).toBe(2);
+      const rememberArgs = renderRemember.mock.calls[0][0];
+      expect(rememberArgs.input.name).toBe('remember');
+      expect(rememberArgs.input.value).toBe('yes');
     });
 
     test('validates', () => {
@@ -75,13 +89,18 @@ describe('Yarfl.Field', () => {
     describe('if a field with the same name already exists', () => {
       test("does't reinitialize the value", () => {
         const renderEmail = jest.fn(() => null);
-        const App = ({ renderTwice }) => (
+        const App = ({ renderTwice, renderThreeTimes }) => (
           <Yarfl.Form onSubmit={() => {}}>
             {({}) => (
               <React.Fragment>
                 <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
                 {renderTwice && (
                   <Yarfl.Field name="email">{() => null}</Yarfl.Field>
+                )}
+                {renderThreeTimes && (
+                  <Yarfl.Field name="email" initialValue="some third value">
+                    {() => null}
+                  </Yarfl.Field>
                 )}
               </React.Fragment>
             )}
@@ -102,6 +121,9 @@ describe('Yarfl.Field', () => {
         );
 
         root.update(<App renderTwice />);
+        expect(renderEmail.mock.calls.length).toBe(2);
+
+        root.update(<App renderTwice renderThreeTimes />);
         expect(renderEmail.mock.calls.length).toBe(2);
       });
     });

@@ -174,6 +174,14 @@ Name of the field.
 
 Either a validation function, or an array of validation functions.
 
+#### initialValue
+
+Define the initial value of the field (string, number, or boolean).
+
+_Note: if you render multiple fields with the same name, the first field that
+mounts will 'win' and it's `initialValue` will be taken. Even if the
+`initialValue` of that field is empty or undefined._
+
 ### <Yarfl.SubField />
 
 Use this component to create a section in your form.

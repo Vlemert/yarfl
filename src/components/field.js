@@ -7,7 +7,7 @@ import Context from './context';
 
 class Field extends React.Component {
   render() {
-    const { name, validate, children } = this.props;
+    const { name, validate, initialValue, children } = this.props;
 
     return (
       <Context.Consumer>
@@ -15,7 +15,18 @@ class Field extends React.Component {
           functions: { registerField, changeField, focusField, blurField },
           fields
         }) => {
-          const field = fields[name] || defaultFieldState;
+          let field = fields[name];
+
+          if (!field) {
+            if (initialValue !== undefined && initialValue !== '') {
+              field = {
+                ...defaultFieldState,
+                value: initialValue
+              };
+            } else {
+              field = defaultFieldState;
+            }
+          }
 
           return (
             <FieldRenderer
@@ -41,6 +52,11 @@ Field.propTypes = {
   validate: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.func),
     PropTypes.func
+  ]),
+  initialValue: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.bool
   ])
 };
 

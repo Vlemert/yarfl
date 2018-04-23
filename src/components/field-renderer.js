@@ -7,7 +7,7 @@ class FieldRenderer extends React.Component {
   componentDidMount() {
     const { name, validate, registerField, field } = this.props;
     const { value } = field;
-    registerField(name, value || defaultFieldState.value, validate);
+    registerField(name, value, validate);
   }
 
   onChange = e => {
