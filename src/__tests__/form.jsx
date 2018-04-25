@@ -4,7 +4,19 @@ import TestRenderer from 'react-test-renderer';
 import { noop, nullRender } from './util';
 import Yarfl from '../index';
 
+const consoleError = console.error;
+
 describe('Yarfl.Form', () => {
+  beforeEach(() => {
+    console.error = e => {
+      throw e;
+    };
+  });
+
+  afterEach(() => {
+    console.error = consoleError;
+  });
+
   test('renders the right content', () => {
     const render = () => 'form!';
     const root = TestRenderer.create(
@@ -80,5 +92,22 @@ describe('Yarfl.Form', () => {
         things: 'some nested value'
       }
     });
+  });
+
+  test("doesn't set state after unmounting", async () => {
+    const renderForm = jest.fn(nullRender);
+
+    const root = TestRenderer.create(
+      <Yarfl.Form onSubmit={() => Promise.resolve()}>{renderForm}</Yarfl.Form>
+    );
+
+    const formArgs = renderForm.mock.calls[0][0];
+    formArgs.submit({
+      preventDefault: noop
+    });
+
+    root.unmount();
+
+    await new Promise(setImmediate);
   });
 });
