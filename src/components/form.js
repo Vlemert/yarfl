@@ -28,17 +28,13 @@ class Form extends React.Component {
 
     const values = getFieldValues(fields);
 
+    if (Object.values(fields).some(field => field.invalid)) {
+      return;
+    }
+
     this.dispatch({
       type: 'submit'
     });
-
-    if (Object.values(fields).some(field => field.invalid)) {
-      this.dispatch({
-        type: 'submit-failed',
-        payload: {}
-      });
-      return;
-    }
 
     let submitResult;
     try {
@@ -50,23 +46,31 @@ class Form extends React.Component {
           error
         }
       });
+      return;
     }
 
-    Promise.resolve(submitResult).then(
-      result => {
-        this.dispatch({
-          type: 'submit-success'
-        });
-      },
-      error => {
-        this.dispatch({
-          type: 'submit-failed',
-          payload: {
-            error
-          }
-        });
-      }
-    );
+    if (Promise.resolve(submitResult) === submitResult) {
+      Promise.resolve(submitResult).then(
+        result => {
+          this.dispatch({
+            type: 'submit-success'
+          });
+        },
+        error => {
+          this.dispatch({
+            type: 'submit-failed',
+            payload: {
+              error
+            }
+          });
+        }
+      );
+      return;
+    }
+
+    this.dispatch({
+      type: 'submit-success'
+    });
   };
 
   getErrors = (value, validate) => {

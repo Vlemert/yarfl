@@ -6,9 +6,15 @@ import Context from './context';
 
 const State = ({ children }) => (
   <Context.Consumer>
-    {({ error }) => (
-      <FormRenderer render={children} props={{ error }} trigger={error} />
-    )}
+    {({ formState }) => {
+      return (
+        <FormRenderer
+          render={children}
+          props={formState}
+          trigger={formState}
+        />
+      );
+    }}
   </Context.Consumer>
 );
 

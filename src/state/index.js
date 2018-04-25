@@ -103,21 +103,11 @@ const fieldsReducer = (state = {}, action = {}) => {
 };
 
 const defaultFormState = {
-  fields: {},
   submitting: false,
   error: undefined
 };
-const formReducer = (state = defaultFormState, action = {}) => {
+const formStateReducer = (state = defaultFormState, action = {}) => {
   switch (action.type) {
-    // TODO: place action types in a dict
-    case 'register':
-    case 'change':
-    case 'focus':
-    case 'blur':
-      return {
-        ...state,
-        fields: fieldsReducer(state.fields, action)
-      };
     case 'submit':
       return {
         fields: fieldsReducer(state.fields, action),
@@ -133,6 +123,37 @@ const formReducer = (state = defaultFormState, action = {}) => {
       return {
         ...state,
         submitting: false
+      };
+    default:
+      return state;
+  }
+};
+
+const defaultRootState = {
+  fields: fieldsReducer(),
+  formState: formStateReducer()
+};
+const formReducer = (state = defaultRootState, action = {}) => {
+  switch (action.type) {
+    // TODO: place action types in a dict
+    case 'register':
+    case 'change':
+    case 'focus':
+    case 'blur':
+      return {
+        ...state,
+        fields: fieldsReducer(state.fields, action)
+      };
+    case 'submit':
+      return {
+        fields: fieldsReducer(state.fields, action),
+        formState: formStateReducer(state.formState, action)
+      };
+    case 'submit-failed':
+    case 'submit-success':
+      return {
+        ...state,
+        formState: formStateReducer(state.formState, action)
       };
     default:
       return state;

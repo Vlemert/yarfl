@@ -19,6 +19,56 @@ describe('Yarfl.State', () => {
     expect(stateArgs.error).toBeUndefined();
   });
 
+  test('rerenders on form submit (sync onSubmit)', async () => {
+    const renderState = jest.fn(nullRender);
+    const renderForm = jest.fn(() => (
+      <React.Fragment>
+        <Yarfl.Field name="email">{nullRender}</Yarfl.Field>
+        <Yarfl.State>{renderState}</Yarfl.State>
+      </React.Fragment>
+    ));
+
+    TestRenderer.create(<Yarfl.Form onSubmit={noop}>{renderForm}</Yarfl.Form>);
+
+    expect(renderState.mock.calls.length).toBe(1);
+    const formArgs = renderForm.mock.calls[0][0];
+    formArgs.submit({
+      preventDefault: noop
+    });
+
+    expect(renderState.mock.calls.length).toBe(3);
+    expect(renderState.mock.calls[1][0].submitting).toBe(true);
+    expect(renderState.mock.calls[2][0].submitting).toBe(false);
+  });
+
+  test('rerenders on form submit (async onSubmit)', async () => {
+    const renderState = jest.fn(nullRender);
+    const renderForm = jest.fn(() => (
+      <React.Fragment>
+        <Yarfl.Field name="email">{nullRender}</Yarfl.Field>
+        <Yarfl.State>{renderState}</Yarfl.State>
+      </React.Fragment>
+    ));
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={() => Promise.resolve()}>{renderForm}</Yarfl.Form>
+    );
+
+    expect(renderState.mock.calls.length).toBe(1);
+    const formArgs = renderForm.mock.calls[0][0];
+    formArgs.submit({
+      preventDefault: noop
+    });
+
+    expect(renderState.mock.calls.length).toBe(2);
+    expect(renderState.mock.calls[1][0].submitting).toBe(true);
+
+    await new Promise(setImmediate);
+
+    expect(renderState.mock.calls.length).toBe(3);
+    expect(renderState.mock.calls[2][0].submitting).toBe(false);
+  });
+
   test('rerenders when a form fails to submit (rejected promise)', async () => {
     const renderForm = jest.fn(() => <Yarfl.State>{renderState}</Yarfl.State>);
     const renderState = jest.fn(nullRender);
@@ -34,10 +84,12 @@ describe('Yarfl.State', () => {
       preventDefault: noop
     });
 
+    expect(renderState.mock.calls.length).toBe(2);
+
     await new Promise(setImmediate);
 
-    expect(renderState.mock.calls.length).toBe(2);
-    const stateArgs = renderState.mock.calls[1][0];
+    expect(renderState.mock.calls.length).toBe(3);
+    const stateArgs = renderState.mock.calls[2][0];
     expect(stateArgs.error).toBe('test error');
   });
 
@@ -60,11 +112,16 @@ describe('Yarfl.State', () => {
       preventDefault: noop
     });
 
-    await new Promise(setImmediate);
-
-    expect(renderState.mock.calls.length).toBe(2);
-    const stateArgs = renderState.mock.calls[1][0];
+    // TODO: we could possibly make this 2 renders if we don't set submitting to
+    // true if the submit result is sync
+    expect(renderState.mock.calls.length).toBe(3);
+    const stateArgs = renderState.mock.calls[2][0];
     expect(stateArgs.error).toBe('test error');
+
+    // This is here to make sure that we're not accidentally updating the state
+    // to 'success' on the next tick
+    await new Promise(setImmediate);
+    expect(renderState.mock.calls.length).toBe(3);
   });
 
   test("doesn't rerender if validation fails on submit", async () => {
