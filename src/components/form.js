@@ -13,6 +13,10 @@ class Form extends React.Component {
   // Visible effect: on submit every field renders because we flip `touched` to
   // true, even if it's already true.
   dispatch = action => {
+    if (this.unmounted) {
+      return;
+    }
+
     this.setState(state => formReducer(state, action));
   };
 
@@ -48,7 +52,6 @@ class Form extends React.Component {
       });
     }
 
-    // TODO: this can cause react errors if the component unmounts
     Promise.resolve(submitResult).then(
       result => {
         this.dispatch({
@@ -136,6 +139,10 @@ class Form extends React.Component {
     ...formReducer(),
     functions: this.functions
   };
+
+  componentWillUnmount() {
+    this.unmounted = true;
+  }
 
   render() {
     const { children } = this.props;
