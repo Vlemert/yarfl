@@ -244,6 +244,10 @@ const SimpleForm = () => (
 
 #### Props passed to the render function
 
+##### submitting
+
+Whether the form is submitting.
+
 ##### error
 
 Whenever an error is thrown in `onSubmit`, that error will be passed here.
