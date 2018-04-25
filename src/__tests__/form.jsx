@@ -65,21 +65,9 @@ describe('Yarfl.Form', () => {
       <Yarfl.Form onSubmit={handleSubmit}>{renderForm}</Yarfl.Form>
     );
 
-    renderEmail.mock.calls[0][0].input.onChange({
-      target: {
-        value: 'example@email.com'
-      }
-    });
-    renderPassword.mock.calls[0][0].input.onChange({
-      target: {
-        value: 'superSafePassw0rd'
-      }
-    });
-    renderThings.mock.calls[0][0].input.onChange({
-      target: {
-        value: 'some nested value'
-      }
-    });
+    renderEmail.mock.calls[0][0].input.onChange('example@email.com');
+    renderPassword.mock.calls[0][0].input.onChange('superSafePassw0rd');
+    renderThings.mock.calls[0][0].input.onChange('some nested value');
     const e = {
       preventDefault: jest.fn()
     };

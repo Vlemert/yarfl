@@ -24,29 +24,17 @@ describe('Yarfl.SubField', () => {
       <Yarfl.Form onSubmit={handleSubmit}>{renderForm}</Yarfl.Form>
     );
 
-    renderStreetName.mock.calls[0][0].input.onChange({
-      target: {
-        value: 'some street'
-      }
-    });
+    renderStreetName.mock.calls[0][0].input.onChange('some street');
     expect(renderStreetName.mock.calls.length).toBe(2);
     expect(renderStreetNumber.mock.calls.length).toBe(1);
     expect(renderZip.mock.calls.length).toBe(1);
 
-    renderStreetNumber.mock.calls[0][0].input.onChange({
-      target: {
-        value: '1234'
-      }
-    });
+    renderStreetNumber.mock.calls[0][0].input.onChange('1234');
     expect(renderStreetName.mock.calls.length).toBe(2);
     expect(renderStreetNumber.mock.calls.length).toBe(2);
     expect(renderZip.mock.calls.length).toBe(1);
 
-    renderZip.mock.calls[0][0].input.onChange({
-      target: {
-        value: 'test zip'
-      }
-    });
+    renderZip.mock.calls[0][0].input.onChange('test zip');
     expect(renderStreetName.mock.calls.length).toBe(2);
     expect(renderStreetNumber.mock.calls.length).toBe(2);
     expect(renderZip.mock.calls.length).toBe(2);
@@ -88,11 +76,7 @@ describe('Yarfl.SubField', () => {
     expect(renderZip.mock.calls.length).toBe(1);
     expect(renderStreet.mock.calls[1][0].active).toBe(true);
 
-    renderStreet.mock.calls[1][0].input.onBlur({
-      target: {
-        value: ''
-      }
-    });
+    renderStreet.mock.calls[1][0].input.onBlur('');
     expect(renderStreet.mock.calls.length).toBe(3);
     expect(renderZip.mock.calls.length).toBe(1);
     expect(renderStreet.mock.calls[2][0].active).toBe(false);

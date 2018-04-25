@@ -103,11 +103,7 @@ describe('Yarfl.State', () => {
       </Yarfl.Form>
     );
 
-    renderField.mock.calls[0][0].input.onChange({
-      target: {
-        value: 'changed text'
-      }
-    });
+    renderField.mock.calls[0][0].input.onChange('changed text');
 
     expect(renderState.mock.calls.length).toBe(1);
   });

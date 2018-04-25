@@ -3,6 +3,20 @@ import React from 'react';
 import { defaultFieldState } from '../state/index';
 import FormRenderer from './form-renderer';
 
+function isEvent(eventOrValue) {
+  return (
+    eventOrValue && eventOrValue.preventDefault && eventOrValue.stopPropagation
+  );
+}
+
+function getValue(eventOrValue) {
+  if (!isEvent(eventOrValue)) {
+    return eventOrValue;
+  }
+
+  return eventOrValue.target.value;
+}
+
 class FieldRenderer extends React.Component {
   componentDidMount() {
     const { name, validate, registerField, field } = this.props;
@@ -12,9 +26,7 @@ class FieldRenderer extends React.Component {
 
   onChange = e => {
     const { name, validate, changeField } = this.props;
-    // TODO: check here if this is an event or value. Is that possible?
-    const value = e.target.value;
-    changeField(name, value, validate);
+    changeField(name, getValue(e), validate);
   };
 
   onFocus = e => {
@@ -24,9 +36,7 @@ class FieldRenderer extends React.Component {
 
   onBlur = e => {
     const { name, validate, blurField } = this.props;
-    // TODO: check here if this is an event or value. Is that possible?
-    const value = e.target.value;
-    blurField(name, value, validate);
+    blurField(name, getValue(e), validate);
   };
 
   render() {

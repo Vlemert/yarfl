@@ -111,11 +111,7 @@ describe('Yarfl.Field', () => {
         const root = TestRenderer.create(<App />);
 
         expect(renderEmail.mock.calls.length).toBe(1);
-        renderEmail.mock.calls[0][0].input.onChange({
-          target: {
-            value: 'some other value'
-          }
-        });
+        renderEmail.mock.calls[0][0].input.onChange('some other value');
         expect(renderEmail.mock.calls.length).toBe(2);
         expect(renderEmail.mock.calls[1][0].input.value).toBe(
           'some other value'
@@ -148,6 +144,8 @@ describe('Yarfl.Field', () => {
       const emailOnChange = emailArgs.input.onChange;
 
       emailOnChange({
+        preventDefault: noop,
+        stopPropagation: noop,
         target: {
           value: 'changed text'
         }
@@ -181,11 +179,7 @@ describe('Yarfl.Field', () => {
       const emailOnChange = emailArgs.input.onChange;
 
       validateEmail.mockImplementationOnce(() => 'test error');
-      emailOnChange({
-        target: {
-          value: 'changed text'
-        }
-      });
+      emailOnChange('changed text');
 
       expect(validateEmail.mock.calls.length).toBe(2);
       expect(validateEmail).toBeCalledWith('changed text');
@@ -238,6 +232,8 @@ describe('Yarfl.Field', () => {
       const emailOnBlur = emailArgs.input.onBlur;
 
       emailOnBlur({
+        preventDefault: noop,
+        stopPropagation: noop,
         target: {
           value: 'changed text'
         }
@@ -268,11 +264,7 @@ describe('Yarfl.Field', () => {
       const emailOnBlur = emailArgs.input.onBlur;
 
       validateEmail.mockImplementationOnce(() => 'test error');
-      emailOnBlur({
-        target: {
-          value: 'changed text'
-        }
-      });
+      emailOnBlur('changed text');
 
       expect(validateEmail.mock.calls.length).toBe(2);
       expect(validateEmail).toBeCalledWith('changed text');
@@ -307,11 +299,7 @@ describe('Yarfl.Field', () => {
       const emailOnChange = emailArgs.input.onChange;
 
       validateEmail[0].mockImplementationOnce(() => 'test error');
-      emailOnChange({
-        target: {
-          value: 'changed text'
-        }
-      });
+      emailOnChange('changed text');
 
       expect(validateEmail[0].mock.calls.length).toBe(2);
       expect(validateEmail[1].mock.calls.length).toBe(1);
@@ -322,11 +310,7 @@ describe('Yarfl.Field', () => {
       expect(updatedEmailArgs.invalid).toBe(true);
 
       validateEmail[1].mockImplementationOnce(() => 'test error 2');
-      emailOnChange({
-        target: {
-          value: 'new changed text'
-        }
-      });
+      emailOnChange('new changed text');
 
       expect(validateEmail[0].mock.calls.length).toBe(3);
       expect(validateEmail[1].mock.calls.length).toBe(2);
