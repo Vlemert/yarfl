@@ -110,6 +110,13 @@ Function that is called when submitting fails
 
 The error that caused the submit failure
 
+#### initialValues
+
+Pass an object with initial field values here.
+
+_Note: setting a value for a field here will take precedence over any value set
+directly on `<Yarfl.Field>`._
+
 ### <Yarfl.Field />
 
 Use this component to create your form's fields. It provides access to the
@@ -172,7 +179,10 @@ set to `true` on blur, and on form submit.
 
 ##### initialValue
 
-The initial value of the field
+The initial value of the field.
+
+\_Note: this value will be ignored if an initial value for the same field is set
+on `<Yarfl.Form>`.
 
 ##### dirty
 

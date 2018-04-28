@@ -13,12 +13,22 @@ class Field extends React.Component {
       <Context.Consumer>
         {({
           functions: { registerField, changeField, focusField, blurField },
+          initialValues,
           fields
         }) => {
           let field = fields[name];
 
           if (!field) {
-            if (initialValue !== undefined && initialValue !== '') {
+            if (
+              initialValues &&
+              initialValues[name] !== undefined &&
+              initialValues[name] !== ''
+            ) {
+              field = {
+                ...defaultFieldState,
+                value: initialValues[name]
+              };
+            } else if (initialValue !== undefined && initialValue !== '') {
               field = {
                 ...defaultFieldState,
                 value: initialValue

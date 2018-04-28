@@ -81,4 +81,34 @@ describe('Yarfl.SubField', () => {
     expect(renderZip.mock.calls.length).toBe(1);
     expect(renderStreet.mock.calls[2][0].active).toBe(false);
   });
+
+  test('passes initialValues correctly on to underlying fields', () => {
+    const renderStreet = jest.fn(nullRender);
+    const renderZip = jest.fn(nullRender);
+
+    TestRenderer.create(
+      <Yarfl.Form
+        onSubmit={noop}
+        initialValues={{
+          address: {
+            street: 'some street',
+            zip: '1234'
+          }
+        }}
+      >
+        {() => (
+          <Yarfl.SubField name="address">
+            <Yarfl.Field name="street">{renderStreet}</Yarfl.Field>
+            <Yarfl.Field name="zip">{renderZip}</Yarfl.Field>
+          </Yarfl.SubField>
+        )}
+      </Yarfl.Form>
+    );
+
+    expect(renderStreet.mock.calls.length).toBe(2);
+    expect(renderStreet.mock.calls[1][0].input.value).toBe('some street');
+
+    expect(renderZip.mock.calls.length).toBe(2);
+    expect(renderZip.mock.calls[1][0].input.value).toBe('1234');
+  });
 });

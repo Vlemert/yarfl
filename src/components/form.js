@@ -112,7 +112,8 @@ class Form extends React.Component {
 
   state = {
     ...defaultRootState,
-    functions: this.functions
+    functions: this.functions,
+    initialValues: this.props.initialValues
   };
 
   componentWillUnmount() {
@@ -133,7 +134,8 @@ class Form extends React.Component {
 Form.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   onSubmitSuccess: PropTypes.func,
-  onSubmitFail: PropTypes.func
+  onSubmitFail: PropTypes.func,
+  initialValues: PropTypes.object
 };
 
 export default Form;

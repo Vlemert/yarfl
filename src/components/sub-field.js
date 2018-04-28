@@ -16,6 +16,7 @@ const SubField = ({ name: subFieldName, children }) => (
   <Context.Consumer>
     {({
       functions: { registerField, changeField, focusField, blurField },
+      initialValues,
       fields,
       ...state
     }) => {
@@ -35,6 +36,7 @@ const SubField = ({ name: subFieldName, children }) => (
             return blurField(`${subFieldName}.${name}`, value, validate);
           }
         },
+        initialValues: initialValues && initialValues[subFieldName],
         fields: (fields[subFieldName] && fields[subFieldName]) || {}
       };
 

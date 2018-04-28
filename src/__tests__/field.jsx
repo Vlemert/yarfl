@@ -10,9 +10,15 @@ describe('Yarfl.Field', () => {
       const renderEmail = jest.fn(nullRender);
       const renderPassword = jest.fn(nullRender);
       const renderRemember = jest.fn(nullRender);
+      const renderName = jest.fn(nullRender);
 
       TestRenderer.create(
-        <Yarfl.Form onSubmit={noop}>
+        <Yarfl.Form
+          onSubmit={noop}
+          initialValues={{
+            name: 'Sherlock'
+          }}
+        >
           {({}) => (
             <React.Fragment>
               <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
@@ -22,6 +28,7 @@ describe('Yarfl.Field', () => {
               <Yarfl.Field name="remember" initialValue="yes">
                 {renderRemember}
               </Yarfl.Field>
+              <Yarfl.Field name="name">{renderName}</Yarfl.Field>
             </React.Fragment>
           )}
         </Yarfl.Form>
@@ -53,6 +60,13 @@ describe('Yarfl.Field', () => {
       expect(rememberArgs.input.name).toBe('remember');
       expect(rememberArgs.input.value).toBe('yes');
       expect(rememberArgs.initialValue).toBe('yes');
+
+      // TODO: same as above
+      expect(renderName.mock.calls.length).toBe(2);
+      const nameArgs = renderName.mock.calls[1][0];
+      expect(nameArgs.input.name).toBe('name');
+      expect(nameArgs.input.value).toBe('Sherlock');
+      expect(nameArgs.initialValue).toBe('Sherlock');
     });
 
     test('validates', () => {
