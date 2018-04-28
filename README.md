@@ -94,6 +94,22 @@ Function that is called when the form submits. Can return a promise. If an error
 is thrown or the returned promise rejects the form will enter an error state and
 the returned error will be passed to `<Yarfl.State>`
 
+#### onSubmitSuccess
+
+Function that is called when submitting succeeds.
+
+##### result
+
+Any result returned from onSubmit
+
+#### onSubmitFail
+
+Function that is called when submitting fails
+
+##### error
+
+The error that caused the submit failure
+
 ### <Yarfl.Field />
 
 Use this component to create your form's fields. It provides access to the

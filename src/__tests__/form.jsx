@@ -94,6 +94,92 @@ describe('Yarfl.Form', () => {
     });
   });
 
+  test('calls onSubmitSuccess with the submit result (sync)', () => {
+    const renderForm = jest.fn(nullRender);
+    const handleSubmit = jest.fn(() => 'submit result');
+    const handleSubmitSuccess = jest.fn();
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={handleSubmit} onSubmitSuccess={handleSubmitSuccess}>
+        {renderForm}
+      </Yarfl.Form>
+    );
+
+    const e = {
+      preventDefault: jest.fn()
+    };
+    renderForm.mock.calls[0][0].submit(e);
+
+    expect(handleSubmitSuccess.mock.calls.length).toBe(1);
+    expect(handleSubmitSuccess).toBeCalledWith('submit result');
+  });
+
+  test('calls onSubmitSuccess with the submit result (async)', async () => {
+    const renderForm = jest.fn(nullRender);
+    const handleSubmit = jest.fn(() => Promise.resolve('submit result'));
+    const handleSubmitSuccess = jest.fn();
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={handleSubmit} onSubmitSuccess={handleSubmitSuccess}>
+        {renderForm}
+      </Yarfl.Form>
+    );
+
+    const e = {
+      preventDefault: jest.fn()
+    };
+    renderForm.mock.calls[0][0].submit(e);
+
+    expect(handleSubmitSuccess.mock.calls.length).toBe(0);
+    await new Promise(setImmediate);
+    expect(handleSubmitSuccess.mock.calls.length).toBe(1);
+    expect(handleSubmitSuccess).toBeCalledWith('submit result');
+  });
+
+  test('calls onSubmitFail with the submit error (sync)', () => {
+    const renderForm = jest.fn(nullRender);
+    const handleSubmit = jest.fn(() => {
+      throw 'submit error';
+    });
+    const handleSubmitFail = jest.fn();
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={handleSubmit} onSubmitFail={handleSubmitFail}>
+        {renderForm}
+      </Yarfl.Form>
+    );
+
+    const e = {
+      preventDefault: jest.fn()
+    };
+    renderForm.mock.calls[0][0].submit(e);
+
+    expect(handleSubmitFail.mock.calls.length).toBe(1);
+    expect(handleSubmitFail).toBeCalledWith('submit error');
+  });
+
+  test('calls onSubmitFail with the submit error (async)', async () => {
+    const renderForm = jest.fn(nullRender);
+    const handleSubmit = jest.fn(() => Promise.reject('submit error'));
+    const handleSubmitFail = jest.fn();
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={handleSubmit} onSubmitFail={handleSubmitFail}>
+        {renderForm}
+      </Yarfl.Form>
+    );
+
+    const e = {
+      preventDefault: jest.fn()
+    };
+    renderForm.mock.calls[0][0].submit(e);
+
+    expect(handleSubmitFail.mock.calls.length).toBe(0);
+    await new Promise(setImmediate);
+    expect(handleSubmitFail.mock.calls.length).toBe(1);
+    expect(handleSubmitFail).toBeCalledWith('submit error');
+  });
+
   test("doesn't set state after unmounting", async () => {
     const renderForm = jest.fn(nullRender);
 

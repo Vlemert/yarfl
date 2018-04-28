@@ -23,7 +23,7 @@ class Form extends React.Component {
   submit = e => {
     e.preventDefault();
 
-    const { onSubmit } = this.props;
+    const { onSubmit, onSubmitSuccess, onSubmitFail } = this.props;
     const { fields } = this.state;
 
     const values = getFieldValues(fields);
@@ -46,6 +46,7 @@ class Form extends React.Component {
           error
         }
       });
+      onSubmitFail && onSubmitFail(error);
       return;
     }
 
@@ -55,6 +56,7 @@ class Form extends React.Component {
           this.dispatch({
             type: 'submit-success'
           });
+          onSubmitSuccess && onSubmitSuccess(result);
         },
         error => {
           this.dispatch({
@@ -63,6 +65,7 @@ class Form extends React.Component {
               error
             }
           });
+          onSubmitFail && onSubmitFail(error);
         }
       );
       return;
@@ -71,6 +74,7 @@ class Form extends React.Component {
     this.dispatch({
       type: 'submit-success'
     });
+    onSubmitSuccess && onSubmitSuccess(submitResult);
   };
 
   getErrors = (value, validate) => {
@@ -162,7 +166,9 @@ class Form extends React.Component {
 }
 
 Form.propTypes = {
-  onSubmit: PropTypes.func.isRequired
+  onSubmit: PropTypes.func.isRequired,
+  onSubmitSuccess: PropTypes.func,
+  onSubmitFail: PropTypes.func
 };
 
 export default Form;
