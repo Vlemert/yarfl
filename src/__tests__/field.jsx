@@ -234,9 +234,10 @@ describe('Yarfl.Field', () => {
       );
 
       const emailArgs = renderEmail.mock.calls[0][0];
-      const emailOnBlur = emailArgs.input.onBlur;
 
-      emailOnBlur({
+      emailArgs.input.onFocus();
+      expect(renderEmail.mock.calls.length).toBe(2);
+      emailArgs.input.onBlur({
         preventDefault: noop,
         stopPropagation: noop,
         target: {
@@ -244,9 +245,9 @@ describe('Yarfl.Field', () => {
         }
       });
 
-      expect(renderEmail.mock.calls.length).toBe(2);
-      expect(renderEmail.mock.calls[1][0].input.value).toBe('changed text');
-      expect(renderEmail.mock.calls[1][0].touched).toBe(true);
+      expect(renderEmail.mock.calls.length).toBe(3);
+      expect(renderEmail.mock.calls[2][0].input.value).toBe('changed text');
+      expect(renderEmail.mock.calls[2][0].touched).toBe(true);
     });
 
     test('causes validate to be called', () => {

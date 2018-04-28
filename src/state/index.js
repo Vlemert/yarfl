@@ -1,3 +1,5 @@
+import produce from 'immer';
+
 const defaultFieldState = {
   value: '',
   error: undefined,
@@ -7,161 +9,100 @@ const defaultFieldState = {
   touched: false,
   initialValue: '',
   dirty: false,
-  pristine: true
-};
-const fieldReducer = (state = defaultFieldState, action = {}) => {
-  switch (action.type) {
-    case 'register': {
-      // We don't want to cause an extra render on registration if it's not
-      // needed
-      if (
-        action.payload.value === state.value &&
-        action.payload.error === state.error
-      ) {
-        return state;
-      }
-      return {
-        ...state,
-        value: action.payload.value,
-        error: action.payload.error,
-        invalid: !!action.payload.error,
-        valid: !action.payload.error,
-        initialValue: action.payload.value
-      };
-    }
-    case 'change':
-      return {
-        ...state,
-        value: action.payload.value,
-        error: action.payload.error,
-        invalid: !!action.payload.error,
-        valid: !action.payload.error,
-        dirty: state.initialValue !== action.payload.value,
-        pristine: state.initialValue === action.payload.value
-      };
-    case 'focus':
-      return {
-        ...state,
-        active: true
-      };
-    case 'blur':
-      return {
-        ...state,
-        value: action.payload.value,
-        error: action.payload.error,
-        invalid: !!action.payload.error,
-        valid: !action.payload.error,
-        touched: true,
-        active: false
-      };
-    case 'submit': {
-      return {
-        ...state,
-        touched: true
-      };
-    }
-    default:
-      return state;
-  }
-};
-
-const fieldsReducer = (state = {}, action = {}) => {
-  switch (action.type) {
-    case 'register':
-    case 'change':
-    case 'focus':
-    case 'blur': {
-      const name = action.payload.path[0];
-      const path = action.payload.path.slice(1);
-
-      if (path.length) {
-        const subFieldsState = state[name] && state[name];
-        return {
-          ...state,
-          [name]: fieldsReducer(subFieldsState, {
-            ...action,
-            payload: {
-              ...action.payload,
-              path
-            }
-          })
-        };
-      }
-
-      return {
-        ...state,
-        [name]: fieldReducer(state[name], action)
-      };
-    }
-    case 'submit':
-      return {
-        ...state,
-        ...Object.entries(state).reduce((fields, [name, field]) => {
-          fields[name] = fieldReducer(field, action);
-          return fields;
-        }, {})
-      };
-    default:
-      return state;
-  }
-};
-
-const defaultFormState = {
-  submitting: false,
-  error: undefined
-};
-const formStateReducer = (state = defaultFormState, action = {}) => {
-  switch (action.type) {
-    case 'submit':
-      return {
-        fields: fieldsReducer(state.fields, action),
-        submitting: true
-      };
-    case 'submit-failed':
-      return {
-        ...state,
-        submitting: false,
-        error: action.payload.error
-      };
-    case 'submit-success':
-      return {
-        ...state,
-        submitting: false
-      };
-    default:
-      return state;
-  }
+  pristine: true,
+  __field__: true
 };
 
 const defaultRootState = {
-  fields: fieldsReducer(),
-  formState: formStateReducer()
-};
-const formReducer = (state = defaultRootState, action = {}) => {
-  switch (action.type) {
-    // TODO: place action types in a dict
-    case 'register':
-    case 'change':
-    case 'focus':
-    case 'blur':
-      return {
-        ...state,
-        fields: fieldsReducer(state.fields, action)
-      };
-    case 'submit':
-      return {
-        fields: fieldsReducer(state.fields, action),
-        formState: formStateReducer(state.formState, action)
-      };
-    case 'submit-failed':
-    case 'submit-success':
-      return {
-        ...state,
-        formState: formStateReducer(state.formState, action)
-      };
-    default:
-      return state;
+  fields: {},
+  formState: {
+    submitting: false,
+    error: undefined
   }
 };
 
-export { defaultFieldState, formReducer };
+const produceField = (field, changes, isInitialization = false) =>
+  produce(field, draftField => {
+    Object.entries(changes).forEach(([key, value]) => {
+      draftField[key] = value;
+    });
+
+    if (isInitialization) {
+      draftField.initialValue = draftField.value;
+    } else {
+      draftField.dirty = draftField.value !== draftField.initialValue;
+      draftField.pristine = draftField.value === draftField.initialValue;
+    }
+
+    draftField.invalid = !!draftField.error;
+    draftField.valid = !draftField.error;
+
+    if (field.active && !draftField.active) {
+      draftField.touched = true;
+    }
+  });
+
+const setDeepField = (fields, path, changes, isInitialization) => {
+  let field = fields;
+  const pathLength = path.length;
+  for (let i = 0; i < pathLength; i++) {
+    const nextName = path[i];
+
+    if (i === pathLength - 1) {
+      if (field[nextName] && isInitialization) {
+        return;
+      }
+
+      field[nextName] = produceField(
+        field[nextName] || defaultFieldState,
+        changes,
+        isInitialization
+      );
+    } else {
+      field = field[nextName] = field[nextName] || {};
+    }
+  }
+};
+
+const setAllFields = (fields, changes) => {
+  Object.entries(fields).forEach(([name, field]) => {
+    if (field.__field__) {
+      fields[name] = produceField(field, changes);
+    } else {
+      setAllFields(field, changes);
+    }
+  });
+};
+
+const changeField = (path, changes, isInitialization) =>
+  produce(draftState => {
+    setDeepField(draftState.fields, path, changes, isInitialization);
+  });
+
+const submit = () =>
+  produce(draftState => {
+    setAllFields(draftState.fields, { touched: true });
+    draftState.formState.submitting = true;
+    draftState.formState.error = undefined;
+  });
+
+const submitSuccess = () =>
+  produce(draftState => {
+    draftState.formState.submitting = false;
+    draftState.formState.error = undefined;
+  });
+
+const submitFail = error =>
+  produce(draftState => {
+    draftState.formState.submitting = false;
+    draftState.formState.error = error;
+  });
+
+const actions = {
+  changeField,
+  submit,
+  submitSuccess,
+  submitFail
+};
+
+export { defaultFieldState, defaultRootState, actions };

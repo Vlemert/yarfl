@@ -196,4 +196,33 @@ describe('Yarfl.Form', () => {
 
     await new Promise(setImmediate);
   });
+
+  test('only fields that are not touched re-render on submit', () => {
+    const renderEmail = jest.fn(nullRender);
+    const renderPassword = jest.fn(nullRender);
+    const renderForm = jest.fn(() => (
+      <React.Fragment>
+        <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
+        <Yarfl.Field name="password">{renderPassword}</Yarfl.Field>
+      </React.Fragment>
+    ));
+    const handleSubmit = jest.fn(noop);
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={handleSubmit}>{renderForm}</Yarfl.Form>
+    );
+
+    renderEmail.mock.calls[0][0].input.onFocus();
+    renderEmail.mock.calls[0][0].input.onBlur('');
+    expect(renderEmail.mock.calls.length).toBe(3);
+    expect(renderPassword.mock.calls.length).toBe(1);
+
+    const e = {
+      preventDefault: noop
+    };
+    renderForm.mock.calls[0][0].submit(e);
+
+    expect(renderEmail.mock.calls.length).toBe(3);
+    expect(renderPassword.mock.calls.length).toBe(2);
+  });
 });
