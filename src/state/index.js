@@ -17,7 +17,9 @@ const defaultRootState = {
   fields: {},
   formState: {
     submitting: false,
-    error: undefined
+    error: undefined,
+    valid: true,
+    invalid: false
   }
 };
 
@@ -74,9 +76,24 @@ const setAllFields = (fields, changes) => {
   });
 };
 
+const everyField = (fields, callback) => {
+  return Object.values(fields).every(field => {
+    if (field.__field__) {
+      return callback(field);
+    } else {
+      return everyField(field, callback);
+    }
+  });
+};
+
 const changeField = (path, changes, isInitialization) =>
   produce(draftState => {
     setDeepField(draftState.fields, path, changes, isInitialization);
+    draftState.formState.valid = everyField(
+      draftState.fields,
+      field => field.valid
+    );
+    draftState.formState.invalid = !draftState.formState.valid;
   });
 
 const submit = () =>

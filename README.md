@@ -272,3 +272,11 @@ Whether the form is submitting.
 
 Whenever an error is thrown in `onSubmit`, that error will be passed here.
 `undefined` if no failed form submission occurred yet.
+
+#### valid
+
+True if _all_ fields in the form are valid, false otherwise.
+
+#### invalid
+
+Opposite of valid. True if _any_ field in the form is invalid, false otherwise.

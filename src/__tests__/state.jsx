@@ -19,7 +19,79 @@ describe('Yarfl.State', () => {
     expect(stateArgs.error).toBeUndefined();
   });
 
-  test('rerenders on form submit (sync onSubmit)', async () => {
+  test('re-renders if validation fails on field registration', async () => {
+    const renderState = jest.fn(nullRender);
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={noop}>
+        {() => (
+          <React.Fragment>
+            <Yarfl.Field name="email" validate={() => 'error'}>
+              {nullRender}
+            </Yarfl.Field>
+            <Yarfl.State>{renderState}</Yarfl.State>
+          </React.Fragment>
+        )}
+      </Yarfl.Form>
+    );
+
+    expect(renderState.mock.calls.length).toBe(2);
+    expect(renderState.mock.calls[1][0].valid).toBe(false);
+    expect(renderState.mock.calls[1][0].invalid).toBe(true);
+  });
+
+  test('re-renders if validation fails on field change', async () => {
+    const validateEmail = jest.fn(noop);
+    const renderEmail = jest.fn(nullRender);
+    const renderState = jest.fn(nullRender);
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={noop}>
+        {() => (
+          <React.Fragment>
+            <Yarfl.Field name="email" validate={validateEmail}>
+              {renderEmail}
+            </Yarfl.Field>
+            <Yarfl.State>{renderState}</Yarfl.State>
+          </React.Fragment>
+        )}
+      </Yarfl.Form>
+    );
+
+    validateEmail.mockImplementationOnce(() => 'error');
+    renderEmail.mock.calls[0][0].input.onChange('');
+
+    expect(renderState.mock.calls.length).toBe(2);
+    expect(renderState.mock.calls[1][0].valid).toBe(false);
+    expect(renderState.mock.calls[1][0].invalid).toBe(true);
+  });
+
+  test("doesn't re-render if validation fails when already invalid", async () => {
+    const renderEmail = jest.fn(nullRender);
+    const renderState = jest.fn(nullRender);
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={noop}>
+        {() => (
+          <React.Fragment>
+            <Yarfl.Field name="email" validate={() => 'error'}>
+              {renderEmail}
+            </Yarfl.Field>
+            <Yarfl.State>{renderState}</Yarfl.State>
+          </React.Fragment>
+        )}
+      </Yarfl.Form>
+    );
+
+    expect(renderState.mock.calls.length).toBe(2);
+    expect(renderState.mock.calls[1][0].valid).toBe(false);
+    expect(renderState.mock.calls[1][0].invalid).toBe(true);
+
+    renderEmail.mock.calls[0][0].input.onChange('');
+    expect(renderState.mock.calls.length).toBe(2);
+  });
+
+  test('re-renders on form submit (sync onSubmit)', async () => {
     const renderState = jest.fn(nullRender);
     const renderForm = jest.fn(() => (
       <React.Fragment>
@@ -41,7 +113,7 @@ describe('Yarfl.State', () => {
     expect(renderState.mock.calls[2][0].submitting).toBe(false);
   });
 
-  test('rerenders on form submit (async onSubmit)', async () => {
+  test('re-renders on form submit (async onSubmit)', async () => {
     const renderState = jest.fn(nullRender);
     const renderForm = jest.fn(() => (
       <React.Fragment>
@@ -69,7 +141,7 @@ describe('Yarfl.State', () => {
     expect(renderState.mock.calls[2][0].submitting).toBe(false);
   });
 
-  test('rerenders when a form fails to submit (rejected promise)', async () => {
+  test('re-renders when a form fails to submit (rejected promise)', async () => {
     const renderForm = jest.fn(() => <Yarfl.State>{renderState}</Yarfl.State>);
     const renderState = jest.fn(nullRender);
 
@@ -93,7 +165,7 @@ describe('Yarfl.State', () => {
     expect(stateArgs.error).toBe('test error');
   });
 
-  test('rerenders when a form fails to submit (thrown error)', async () => {
+  test('re-renders when a form fails to submit (thrown error)', async () => {
     const renderForm = jest.fn(() => <Yarfl.State>{renderState}</Yarfl.State>);
     const renderState = jest.fn(nullRender);
 
@@ -124,7 +196,7 @@ describe('Yarfl.State', () => {
     expect(renderState.mock.calls.length).toBe(3);
   });
 
-  test("doesn't rerender if validation fails on submit", async () => {
+  test("doesn't re-render if validation fails on submit", async () => {
     const renderState = jest.fn(nullRender);
     const renderForm = jest.fn(() => (
       <React.Fragment>
@@ -137,12 +209,14 @@ describe('Yarfl.State', () => {
 
     TestRenderer.create(<Yarfl.Form onSubmit={noop}>{renderForm}</Yarfl.Form>);
 
+    expect(renderState.mock.calls.length).toBe(2);
+
     const formArgs = renderForm.mock.calls[0][0];
     formArgs.submit({
       preventDefault: noop
     });
 
-    expect(renderState.mock.calls.length).toBe(1);
+    expect(renderState.mock.calls.length).toBe(2);
   });
 
   test("doesn't rerender if a field changes", () => {
