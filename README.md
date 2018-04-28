@@ -181,9 +181,6 @@ set to `true` on blur, and on form submit.
 
 The initial value of the field.
 
-\_Note: this value will be ignored if an initial value for the same field is set
-on `<Yarfl.Form>`.
-
 ##### dirty
 
 True if the current value is not equal to the initial value, false otherwise.
@@ -207,6 +204,9 @@ Either a validation function, or an array of validation functions.
 #### initialValue
 
 Define the initial value of the field (string, number, or boolean).
+
+\_Note: this value will be ignored if an initial value for the same field is set
+on `<Yarfl.Form>`.
 
 _Note: if you render multiple fields with the same name, the first field that
 mounts will 'win' and it's `initialValue` will be taken. Even if the
