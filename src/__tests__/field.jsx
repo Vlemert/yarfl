@@ -427,4 +427,54 @@ describe('Yarfl.Field', () => {
       expect(updatedEmailArgs2.invalid).toBe(true);
     });
   });
+
+  test('format & parse', () => {
+    const handleSubmit = jest.fn();
+    const renderEmail = jest.fn(nullRender);
+    const renderForm = jest.fn(() => (
+      <React.Fragment>
+        <Yarfl.Field
+          name="email"
+          initialValue="TEST EMAIL ADDRESS"
+          parse={value => value.toUpperCase()}
+          format={value => value.toLowerCase()}
+        >
+          {renderEmail}
+        </Yarfl.Field>
+      </React.Fragment>
+    ));
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={handleSubmit}>{renderForm}</Yarfl.Form>
+    );
+
+    expect(renderEmail.mock.calls[1][0].input.value).toBe('test email address');
+    renderForm.mock.calls[0][0].submit({
+      preventDefault: noop
+    });
+    expect(handleSubmit.mock.calls[0][0]).toEqual({
+      email: 'TEST EMAIL ADDRESS'
+    });
+
+    renderEmail.mock.calls[0][0].input.onChange('test 2');
+    expect(renderEmail.mock.calls[3][0].input.value).toBe('test 2');
+
+    renderForm.mock.calls[0][0].submit({
+      preventDefault: noop
+    });
+    expect(handleSubmit.mock.calls[1][0]).toEqual({
+      email: 'TEST 2'
+    });
+
+    renderEmail.mock.calls[0][0].input.onFocus();
+    renderEmail.mock.calls[0][0].input.onBlur('test 3');
+    expect(renderEmail.mock.calls[5][0].input.value).toBe('test 3');
+
+    renderForm.mock.calls[0][0].submit({
+      preventDefault: noop
+    });
+    expect(handleSubmit.mock.calls[2][0]).toEqual({
+      email: 'TEST 3'
+    });
+  });
 });

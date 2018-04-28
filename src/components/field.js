@@ -7,7 +7,7 @@ import Context from './context';
 
 class Field extends React.Component {
   render() {
-    const { name, validate, initialValue, children } = this.props;
+    const { name, validate, initialValue, parse, format, children } = this.props;
 
     return (
       <Context.Consumer>
@@ -49,6 +49,8 @@ class Field extends React.Component {
               enableReinitialize={enableReinitialize}
               initialValue={actualInitialValue}
               reinitializeField={reinitializeField}
+              parse={parse}
+              format={format}
             />
           );
         }}
@@ -68,7 +70,9 @@ Field.propTypes = {
     PropTypes.string,
     PropTypes.number,
     PropTypes.bool
-  ])
+  ]),
+  parse: PropTypes.func,
+  format: PropTypes.func
 };
 
 export default Field;

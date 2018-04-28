@@ -39,8 +39,9 @@ class FieldRenderer extends React.Component {
   }
 
   onChange = e => {
-    const { name, validate, changeField } = this.props;
-    changeField(name, getValue(e), validate);
+    const { name, validate, parse, changeField } = this.props;
+    const value = getValue(e);
+    changeField(name, parse ? parse(value) : value, validate);
   };
 
   onFocus = e => {
@@ -49,12 +50,13 @@ class FieldRenderer extends React.Component {
   };
 
   onBlur = e => {
-    const { name, validate, blurField } = this.props;
-    blurField(name, getValue(e), validate);
+    const { name, validate, parse, blurField } = this.props;
+    const value = getValue(e);
+    blurField(name, parse ? parse(value) : value, validate);
   };
 
   render() {
-    const { render, name, field } = this.props;
+    const { render, name, format, field } = this.props;
     const { value, ...fieldState } = field;
 
     return (
@@ -66,7 +68,7 @@ class FieldRenderer extends React.Component {
             onFocus: this.onFocus,
             onBlur: this.onBlur,
             name,
-            value
+            value: format ? format(value) : value
           },
           ...fieldState
         }}

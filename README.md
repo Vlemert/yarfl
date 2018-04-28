@@ -217,6 +217,16 @@ _Note: if you render multiple fields with the same name, the first field that
 mounts will 'win' and it's `initialValue` will be taken. Even if the
 `initialValue` of that field is empty or undefined._
 
+#### parse
+
+Use this hook to transform the value that will be stored in the form state (and
+subsequently passed to the `onSubmit` handler). Mirrors `format`.
+
+#### format
+
+Use this hook to transform the value that will be passed to your input. Mirrors
+`parse`.
+
 ### <Yarfl.SubField />
 
 Use this component to create a section in your form.
