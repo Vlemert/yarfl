@@ -170,13 +170,17 @@ Whether validation has not failed
 Whether the field has been touched since the form was rendered. Automatically
 set to `true` on blur, and on form submit.
 
+##### initialValue
+
+The initial value of the field
+
 ##### dirty
 
-Not yet implemented
+True if the current value is not equal to the initial value, false otherwise.
 
 ##### pristine
 
-Not yet implemented
+True if the current value is equal to the initial value, false otherwise.
 
 #### children
 

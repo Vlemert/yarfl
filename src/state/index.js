@@ -5,6 +5,7 @@ const defaultFieldState = {
   invalid: false,
   valid: true,
   touched: false,
+  initialValue: '',
   dirty: false,
   pristine: true
 };
@@ -24,7 +25,8 @@ const fieldReducer = (state = defaultFieldState, action = {}) => {
         value: action.payload.value,
         error: action.payload.error,
         invalid: !!action.payload.error,
-        valid: !action.payload.error
+        valid: !action.payload.error,
+        initialValue: action.payload.value
       };
     }
     case 'change':
@@ -33,7 +35,9 @@ const fieldReducer = (state = defaultFieldState, action = {}) => {
         value: action.payload.value,
         error: action.payload.error,
         invalid: !!action.payload.error,
-        valid: !action.payload.error
+        valid: !action.payload.error,
+        dirty: state.initialValue !== action.payload.value,
+        pristine: state.initialValue === action.payload.value
       };
     case 'focus':
       return {

@@ -36,6 +36,7 @@ describe('Yarfl.Field', () => {
       expect(emailArgs.invalid).toBe(false);
       expect(emailArgs.valid).toBe(true);
       expect(emailArgs.touched).toBe(false);
+      expect(emailArgs.initialValue).toBe('');
       expect(emailArgs.dirty).toBe(false);
       expect(emailArgs.pristine).toBe(true);
 
@@ -48,9 +49,10 @@ describe('Yarfl.Field', () => {
       // mechanism that prevents re-rendering in FormRenderer smarter (shallow
       // equal 'trigger'?)
       expect(renderRemember.mock.calls.length).toBe(2);
-      const rememberArgs = renderRemember.mock.calls[0][0];
+      const rememberArgs = renderRemember.mock.calls[1][0];
       expect(rememberArgs.input.name).toBe('remember');
       expect(rememberArgs.input.value).toBe('yes');
+      expect(rememberArgs.initialValue).toBe('yes');
     });
 
     test('validates', () => {
@@ -152,8 +154,11 @@ describe('Yarfl.Field', () => {
       });
 
       expect(renderEmail.mock.calls.length).toBe(2);
-      expect(renderEmail.mock.calls[1][0].input.value).toBe('changed text');
       const updatedEmailArgs = renderEmail.mock.calls[1][0];
+      expect(updatedEmailArgs.input.value).toBe('changed text');
+      expect(updatedEmailArgs.initialValue).toBe('');
+      expect(updatedEmailArgs.dirty).toBe(true);
+      expect(updatedEmailArgs.pristine).toBe(false);
       expect(updatedEmailArgs.input.onChange).toBe(emailArgs.input.onChange);
       expect(updatedEmailArgs.input.onFocus).toBe(emailArgs.input.onFocus);
       expect(updatedEmailArgs.input.onBlur).toBe(emailArgs.input.onBlur);
