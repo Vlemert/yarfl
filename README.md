@@ -117,6 +117,11 @@ Pass an object with initial field values here.
 _Note: setting a value for a field here will take precedence over any value set
 directly on `<Yarfl.Field>`._
 
+#### enableReinitialize
+
+If `true`, the form will reinitialize fields when their initial value in
+`Form.initialValues` or `Field.initialValue` changes.
+
 ### <Yarfl.Field />
 
 Use this component to create your form's fields. It provides access to the

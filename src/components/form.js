@@ -107,14 +107,45 @@ class Form extends React.Component {
           active: false
         })
       );
+    },
+    reinitializeField: (name, value, validate) => {
+      this.dispatch(
+        actions.changeField(
+          pathToArray(name),
+          {
+            value,
+            error: this.getErrors(value, validate)
+          },
+          false,
+          true
+        )
+      );
     }
   };
 
   state = {
     ...defaultRootState,
     functions: this.functions,
-    initialValues: this.props.initialValues
+    initialValues: this.props.initialValues,
+    enableReinitialize: this.props.enableReinitialize
   };
+
+  static getDerivedStateFromProps(props, state) {
+    const changes = {};
+
+    if (state.enableReinitialize !== props.enableReinitialize) {
+      changes.enableReinitialize = props.enableReinitialize;
+    }
+    // TODO: should we do a deep equal check on initialValues?
+    if (
+      props.enableReinitialize &&
+      state.initialValues !== props.initialValues
+    ) {
+      changes.initialValues = props.initialValues;
+    }
+
+    return changes;
+  }
 
   componentWillUnmount() {
     this.unmounted = true;
@@ -135,7 +166,8 @@ Form.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   onSubmitSuccess: PropTypes.func,
   onSubmitFail: PropTypes.func,
-  initialValues: PropTypes.object
+  initialValues: PropTypes.object,
+  enableReinitialize: PropTypes.bool
 };
 
 export default Form;

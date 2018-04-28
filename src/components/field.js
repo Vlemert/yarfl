@@ -12,26 +12,24 @@ class Field extends React.Component {
     return (
       <Context.Consumer>
         {({
-          functions: { registerField, changeField, focusField, blurField },
+          functions: { registerField, changeField, focusField, blurField, reinitializeField },
           initialValues,
+          enableReinitialize,
           fields
         }) => {
           let field = fields[name];
 
+          const initialValueFromForm = initialValues && initialValues[name];
+          const actualInitialValue =
+            initialValueFromForm !== undefined
+              ? initialValueFromForm
+              : initialValue;
+
           if (!field) {
-            if (
-              initialValues &&
-              initialValues[name] !== undefined &&
-              initialValues[name] !== ''
-            ) {
+            if (actualInitialValue !== undefined && actualInitialValue !== '') {
               field = {
                 ...defaultFieldState,
-                value: initialValues[name]
-              };
-            } else if (initialValue !== undefined && initialValue !== '') {
-              field = {
-                ...defaultFieldState,
-                value: initialValue
+                value: actualInitialValue
               };
             } else {
               field = defaultFieldState;
@@ -48,6 +46,9 @@ class Field extends React.Component {
               focusField={focusField}
               blurField={blurField}
               field={field}
+              enableReinitialize={enableReinitialize}
+              initialValue={actualInitialValue}
+              reinitializeField={reinitializeField}
             />
           );
         }}

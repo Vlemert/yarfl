@@ -142,6 +142,91 @@ describe('Yarfl.Field', () => {
     });
   });
 
+  test('reinitialize', () => {
+    const renderName = jest.fn(nullRender);
+    const renderStreet = jest.fn(nullRender);
+    const renderZip = jest.fn(nullRender);
+
+    const App = ({
+      initialValues,
+      initialStreet,
+      initialZip,
+      enableReinitialize
+    }) => (
+      <Yarfl.Form
+        onSubmit={noop}
+        initialValues={initialValues}
+        enableReinitialize={enableReinitialize}
+      >
+        {() => (
+          <React.Fragment>
+            <Yarfl.Field name="name">{renderName}</Yarfl.Field>
+            <Yarfl.Field name="street" initialValue={initialStreet}>
+              {renderStreet}
+            </Yarfl.Field>
+            <Yarfl.SubField name="address">
+              <Yarfl.Field name="zip" initialValue={initialZip}>
+                {renderZip}
+              </Yarfl.Field>
+            </Yarfl.SubField>
+          </React.Fragment>
+        )}
+      </Yarfl.Form>
+    );
+
+    const root = TestRenderer.create(
+      <App
+        initialValues={{
+          name: 'initial name',
+          address: {
+            zip: 'initial zip'
+          }
+        }}
+        initialStreet="initial street"
+      />
+    );
+
+    expect(renderName.mock.calls.length).toBe(2);
+    expect(renderName.mock.calls[1][0].input.value).toBe('initial name');
+    expect(renderStreet.mock.calls.length).toBe(2);
+    expect(renderStreet.mock.calls[1][0].input.value).toBe('initial street');
+    expect(renderZip.mock.calls.length).toBe(2);
+    expect(renderZip.mock.calls[1][0].input.value).toBe('initial zip');
+
+    root.update(
+      <App
+        initialValues={{
+          name: 'other name'
+        }}
+        initialStreet="other street"
+        initialZip="other zip"
+        enableReinitialize
+      />
+    );
+
+    expect(renderName.mock.calls.length).toBe(3);
+    expect(renderName.mock.calls[2][0].input.value).toBe('other name');
+    expect(renderStreet.mock.calls.length).toBe(3);
+    expect(renderStreet.mock.calls[2][0].input.value).toBe('other street');
+    expect(renderZip.mock.calls.length).toBe(3);
+    expect(renderZip.mock.calls[1][0].input.value).toBe('initial zip');
+
+    root.update(
+      <App
+        initialValues={{
+          name: 'other name'
+        }}
+        initialStreet="other street"
+        initialZip="other zip"
+        enableReinitialize
+      />
+    );
+
+    expect(renderName.mock.calls.length).toBe(3);
+    expect(renderStreet.mock.calls.length).toBe(3);
+    expect(renderZip.mock.calls.length).toBe(3);
+  });
+
   describe('onChange', () => {
     test('handled and causes rerender', () => {
       const renderEmail = jest.fn(nullRender);

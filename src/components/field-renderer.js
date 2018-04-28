@@ -24,6 +24,20 @@ class FieldRenderer extends React.Component {
     registerField(name, value, validate);
   }
 
+  componentDidUpdate(prevProps) {
+    const {
+      name,
+      validate,
+      enableReinitialize,
+      initialValue,
+      reinitializeField
+    } = this.props;
+
+    if (enableReinitialize && initialValue !== prevProps.initialValue) {
+      reinitializeField(name, initialValue, validate);
+    }
+  }
+
   onChange = e => {
     const { name, validate, changeField } = this.props;
     changeField(name, getValue(e), validate);

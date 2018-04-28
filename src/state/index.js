@@ -25,18 +25,23 @@ const defaultRootState = {
   }
 };
 
-const produceField = (field, changes, isInitialization = false) =>
+const produceField = (
+  field,
+  changes,
+  isRegistration = false,
+  isInitialization = false
+) =>
   produce(field, draftField => {
     Object.entries(changes).forEach(([key, value]) => {
       draftField[key] = value;
     });
 
-    if (isInitialization) {
+    if (isRegistration || isInitialization) {
       draftField.initialValue = draftField.value;
-    } else {
-      draftField.dirty = draftField.value !== draftField.initialValue;
-      draftField.pristine = draftField.value === draftField.initialValue;
     }
+
+    draftField.dirty = draftField.value !== draftField.initialValue;
+    draftField.pristine = draftField.value === draftField.initialValue;
 
     draftField.invalid = !!draftField.error;
     draftField.valid = !draftField.error;
@@ -46,20 +51,27 @@ const produceField = (field, changes, isInitialization = false) =>
     }
   });
 
-const setDeepField = (fields, path, changes, isInitialization) => {
+const setDeepField = (
+  fields,
+  path,
+  changes,
+  isRegistration,
+  isInitialization
+) => {
   let field = fields;
   const pathLength = path.length;
   for (let i = 0; i < pathLength; i++) {
     const nextName = path[i];
 
     if (i === pathLength - 1) {
-      if (field[nextName] && isInitialization) {
+      if (field[nextName] && isRegistration) {
         return;
       }
 
       field[nextName] = produceField(
         field[nextName] || defaultFieldState,
         changes,
+        isRegistration,
         isInitialization
       );
     } else {
@@ -88,9 +100,15 @@ const everyField = (fields, callback) => {
   });
 };
 
-const changeField = (path, changes, isInitialization) =>
+const changeField = (path, changes, isRegistration, isInitialization) =>
   produce(draftState => {
-    setDeepField(draftState.fields, path, changes, isInitialization);
+    setDeepField(
+      draftState.fields,
+      path,
+      changes,
+      isRegistration,
+      isInitialization
+    );
     draftState.formState.valid = everyField(
       draftState.fields,
       field => field.valid
