@@ -19,7 +19,9 @@ const defaultRootState = {
     submitting: false,
     error: undefined,
     valid: true,
-    invalid: false
+    invalid: false,
+    dirty: false,
+    pristine: true
   }
 };
 
@@ -94,6 +96,11 @@ const changeField = (path, changes, isInitialization) =>
       field => field.valid
     );
     draftState.formState.invalid = !draftState.formState.valid;
+    draftState.formState.pristine = everyField(
+      draftState.fields,
+      field => field.pristine
+    );
+    draftState.formState.dirty = !draftState.formState.pristine;
   });
 
 const submit = () =>

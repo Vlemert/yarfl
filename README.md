@@ -275,8 +275,18 @@ Whenever an error is thrown in `onSubmit`, that error will be passed here.
 
 #### valid
 
-True if _all_ fields in the form are valid, false otherwise.
+Opposite of invalid. True if _all_ fields in the form are valid, false
+otherwise.
 
 #### invalid
 
 Opposite of valid. True if _any_ field in the form is invalid, false otherwise.
+
+#### dirty
+
+Opposite of pristine. True if _any_ field in the form is dirty, false otherwise.
+
+#### pristine
+
+Opposite of dirty. True if _all_ fields in the form are pristine, false
+otherwise.

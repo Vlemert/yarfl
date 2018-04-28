@@ -219,7 +219,7 @@ describe('Yarfl.State', () => {
     expect(renderState.mock.calls.length).toBe(2);
   });
 
-  test("doesn't rerender if a field changes", () => {
+  test('re-renders if a field changes', () => {
     const renderField = jest.fn(nullRender);
     const renderState = jest.fn(nullRender);
 
@@ -236,6 +236,37 @@ describe('Yarfl.State', () => {
 
     renderField.mock.calls[0][0].input.onChange('changed text');
 
-    expect(renderState.mock.calls.length).toBe(1);
+    expect(renderState.mock.calls.length).toBe(2);
+    expect(renderState.mock.calls[1][0].dirty).toBe(true);
+    expect(renderState.mock.calls[1][0].pristine).toBe(false);
+
+    renderField.mock.calls[0][0].input.onChange('');
+    expect(renderState.mock.calls.length).toBe(3);
+    expect(renderState.mock.calls[2][0].dirty).toBe(false);
+    expect(renderState.mock.calls[2][0].pristine).toBe(true);
+  });
+
+  test("doesn't re-render if a field changes when already dirty", () => {
+    const renderField = jest.fn(nullRender);
+    const renderState = jest.fn(nullRender);
+
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={noop}>
+        {() => (
+          <React.Fragment>
+            <Yarfl.Field name="email">{renderField}</Yarfl.Field>
+            <Yarfl.State>{renderState}</Yarfl.State>
+          </React.Fragment>
+        )}
+      </Yarfl.Form>
+    );
+
+    renderField.mock.calls[0][0].input.onChange('changed text');
+
+    expect(renderState.mock.calls.length).toBe(2);
+
+    renderField.mock.calls[0][0].input.onChange('other text');
+
+    expect(renderState.mock.calls.length).toBe(2);
   });
 });
