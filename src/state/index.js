@@ -118,6 +118,7 @@ const changeField = (
   isInitialization
 ) =>
   produce(draftState => {
+    // console.log('change', path, value);
     let newFieldDirty;
     if (value !== undefined) {
       const storedValue = setDeepValue(

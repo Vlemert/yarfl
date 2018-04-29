@@ -1,3 +1,3 @@
 export const pathToArray = path => {
-  return path.split('.');
+  return path.split(/[^\w]+/);
 };
