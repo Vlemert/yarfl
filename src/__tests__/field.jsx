@@ -45,7 +45,6 @@ describe('Yarfl.Field', () => {
       expect(emailArgs.touched).toBe(false);
       expect(emailArgs.initialValue).toBe('');
       expect(emailArgs.dirty).toBe(false);
-      expect(emailArgs.pristine).toBe(true);
 
       expect(renderPassword.mock.calls.length).toBe(1);
       const passwordArgs = renderPassword.mock.calls[0][0];
@@ -261,7 +260,6 @@ describe('Yarfl.Field', () => {
       expect(updatedEmailArgs.input.value).toBe('changed text');
       expect(updatedEmailArgs.initialValue).toBe('');
       expect(updatedEmailArgs.dirty).toBe(true);
-      expect(updatedEmailArgs.pristine).toBe(false);
       expect(updatedEmailArgs.input.onChange).toBe(emailArgs.input.onChange);
       expect(updatedEmailArgs.input.onFocus).toBe(emailArgs.input.onFocus);
       expect(updatedEmailArgs.input.onBlur).toBe(emailArgs.input.onBlur);

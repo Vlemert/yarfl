@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import isEqual from 'react-fast-compare';
 
 import { pathToArray } from '../util/index';
 import { defaultRootState, actions } from '../state/index';
@@ -134,10 +135,10 @@ class Form extends React.Component {
     if (state.enableReinitialize !== props.enableReinitialize) {
       changes.enableReinitialize = props.enableReinitialize;
     }
-    // TODO: should we do a deep equal check on initialValues?
+
     if (
       props.enableReinitialize &&
-      state.initialValues !== props.initialValues
+      !isEqual(state.initialValues, props.initialValue)
     ) {
       changes.initialValues = props.initialValues;
     }
@@ -154,7 +155,12 @@ class Form extends React.Component {
 
     return (
       <Context.Provider value={this.state}>
-        <FormRenderer render={children} props={{ submit: this.handleSubmit }} />
+        <FormRenderer
+          render={children}
+          props={{
+            submit: this.handleSubmit
+          }}
+        />
       </Context.Provider>
     );
   }

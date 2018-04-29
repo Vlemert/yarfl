@@ -1,4 +1,5 @@
 import produce from 'immer';
+import isEqual from 'react-fast-compare';
 
 const defaultFieldState = {
   error: undefined,
@@ -7,7 +8,6 @@ const defaultFieldState = {
   valid: true,
   touched: false,
   dirty: false,
-  pristine: true,
   __field__: true
 };
 
@@ -20,8 +20,7 @@ const defaultRootState = {
     error: undefined,
     valid: true,
     invalid: false,
-    dirty: false,
-    pristine: true
+    dirty: false
   }
 };
 
@@ -119,7 +118,7 @@ const changeField = (
   isInitialization
 ) =>
   produce(draftState => {
-    let newFieldPristine;
+    let newFieldDirty;
     if (value !== undefined) {
       const storedValue = setDeepValue(
         draftState.values,
@@ -133,41 +132,34 @@ const changeField = (
         value,
         isInitialization
       );
-      newFieldPristine = storedValue === storedInitialValue;
+      newFieldDirty = !isEqual(storedValue, storedInitialValue);
     }
 
     setDeepField(
       draftState.fields,
       path,
-      newFieldPristine !== undefined
+      newFieldDirty !== undefined
         ? {
             ...changes,
-            dirty: !newFieldPristine,
-            pristine: newFieldPristine
+            dirty: newFieldDirty
           }
         : changes,
       isRegistration,
       isInitialization
     );
-    // TODO: optimize this by not checking if the state of the current field
-    // confirms the form state (like below for dirty/pristine)
+    // TODO: figure out what to do here once we validate on form level (and
+    // fields might not be registered). Should decouple valid state from
+    // registered fields as well, like with values and initial?
     draftState.formState.valid = everyField(
       draftState.fields,
       field => field.valid
     );
     draftState.formState.invalid = !draftState.formState.valid;
 
-    if (
-      newFieldPristine !== undefined &&
-      ((draftState.formState.pristine && !newFieldPristine) ||
-        (draftState.formState.dirty && newFieldPristine))
-    ) {
-      draftState.formState.pristine = everyField(
-        draftState.fields,
-        field => field.pristine
-      );
-      draftState.formState.dirty = !draftState.formState.pristine;
-    }
+    draftState.formState.dirty = !isEqual(
+      draftState.values,
+      draftState.initial
+    );
   });
 
 const submit = () =>

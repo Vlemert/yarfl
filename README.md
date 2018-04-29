@@ -188,11 +188,8 @@ The initial value of the field.
 
 ##### dirty
 
-True if the current value is not equal to the initial value, false otherwise.
-
-##### pristine
-
-True if the current value is equal to the initial value, false otherwise.
+True if the current value is not deep equal to the initial value, false
+otherwise.
 
 #### children
 
@@ -309,9 +306,5 @@ Opposite of valid. True if _any_ field in the form is invalid, false otherwise.
 
 #### dirty
 
-Opposite of pristine. True if _any_ field in the form is dirty, false otherwise.
-
-#### pristine
-
-Opposite of dirty. True if _all_ fields in the form are pristine, false
-otherwise.
+True if the current values of the form are not deep equal to the initial values,
+false otherwise.

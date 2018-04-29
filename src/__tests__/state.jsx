@@ -238,12 +238,10 @@ describe('Yarfl.State', () => {
 
     expect(renderState.mock.calls.length).toBe(2);
     expect(renderState.mock.calls[1][0].dirty).toBe(true);
-    expect(renderState.mock.calls[1][0].pristine).toBe(false);
 
     renderField.mock.calls[0][0].input.onChange('');
     expect(renderState.mock.calls.length).toBe(3);
     expect(renderState.mock.calls[2][0].dirty).toBe(false);
-    expect(renderState.mock.calls[2][0].pristine).toBe(true);
   });
 
   test("doesn't re-render if a field changes when already dirty", () => {
