@@ -138,6 +138,14 @@ describe('Yarfl.Field', () => {
     });
   });
 
+  test('enableReinitialize should not cause errors if a field has no initial value', () => {
+    TestRenderer.create(
+      <Yarfl.Form onSubmit={noop} enableReinitialize>
+        {() => <Yarfl.Field name="city">{nullRender}</Yarfl.Field>}
+      </Yarfl.Form>
+    );
+  });
+
   test('reinitialize', () => {
     const renderName = jest.fn(nullRender);
     const renderStreet = jest.fn(nullRender);

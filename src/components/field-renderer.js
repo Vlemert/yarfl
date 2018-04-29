@@ -33,7 +33,11 @@ class FieldRenderer extends React.Component {
       reinitializeField
     } = this.props;
 
-    if (enableReinitialize && initialValue !== liveInitialValue) {
+    if (
+      enableReinitialize &&
+      liveInitialValue !== undefined &&
+      initialValue !== liveInitialValue
+    ) {
       reinitializeField(name, liveInitialValue, validate);
     }
   }
