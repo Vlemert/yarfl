@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { pathToArray, getFieldValues } from '../util/index';
+import { pathToArray } from '../util/index';
 import { defaultRootState, actions } from '../state/index';
 import FormRenderer from './form-renderer';
 import Context from './context';
@@ -19,9 +19,7 @@ class Form extends React.Component {
     e.preventDefault();
 
     const { onSubmit, onSubmitSuccess, onSubmitFail } = this.props;
-    const { fields } = this.state;
-
-    const values = getFieldValues(fields);
+    const { fields, values } = this.state;
 
     if (Object.values(fields).some(field => field.invalid)) {
       return;

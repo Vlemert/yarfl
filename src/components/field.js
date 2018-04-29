@@ -7,33 +7,58 @@ import Context from './context';
 
 class Field extends React.Component {
   render() {
-    const { name, validate, initialValue, parse, format, children } = this.props;
+    const {
+      name,
+      validate,
+      initialValue: initialValueFromField,
+      parse,
+      format,
+      children
+    } = this.props;
 
     return (
       <Context.Consumer>
         {({
-          functions: { registerField, changeField, focusField, blurField, reinitializeField },
+          functions: {
+            registerField,
+            changeField,
+            focusField,
+            blurField,
+            reinitializeField
+          },
           initialValues,
           enableReinitialize,
-          fields
+          fields,
+          values,
+          initial
         }) => {
-          let field = fields[name];
+          const field = fields[name] || defaultFieldState;
 
           const initialValueFromForm = initialValues && initialValues[name];
-          const actualInitialValue =
-            initialValueFromForm !== undefined
-              ? initialValueFromForm
-              : initialValue;
+          const initialValueFromState = initial[name];
 
-          if (!field) {
-            if (actualInitialValue !== undefined && actualInitialValue !== '') {
-              field = {
-                ...defaultFieldState,
-                value: actualInitialValue
-              };
-            } else {
-              field = defaultFieldState;
-            }
+          let liveInitialValue;
+          if (initialValueFromForm !== undefined) {
+            liveInitialValue = initialValueFromForm;
+          } else if (initialValueFromField !== undefined) {
+            liveInitialValue = initialValueFromField;
+          }
+
+          let initialValue;
+          if (initialValueFromState !== undefined) {
+            initialValue = initialValueFromState;
+          } else if (liveInitialValue !== undefined) {
+            initialValue = liveInitialValue;
+          } else {
+            initialValue = '';
+          }
+
+          const valueFromState = values[name];
+          let value;
+          if (valueFromState !== undefined) {
+            value = valueFromState;
+          } else {
+            value = initialValue;
           }
 
           return (
@@ -46,8 +71,10 @@ class Field extends React.Component {
               focusField={focusField}
               blurField={blurField}
               field={field}
+              value={value}
               enableReinitialize={enableReinitialize}
-              initialValue={actualInitialValue}
+              initialValue={initialValue}
+              liveInitialValue={liveInitialValue}
               reinitializeField={reinitializeField}
               parse={parse}
               format={format}

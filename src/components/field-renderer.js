@@ -19,8 +19,7 @@ function getValue(eventOrValue) {
 
 class FieldRenderer extends React.Component {
   componentDidMount() {
-    const { name, validate, registerField, field } = this.props;
-    const { value } = field;
+    const { name, value, validate, registerField } = this.props;
     registerField(name, value, validate);
   }
 
@@ -30,11 +29,12 @@ class FieldRenderer extends React.Component {
       validate,
       enableReinitialize,
       initialValue,
+      liveInitialValue,
       reinitializeField
     } = this.props;
 
-    if (enableReinitialize && initialValue !== prevProps.initialValue) {
-      reinitializeField(name, initialValue, validate);
+    if (enableReinitialize && initialValue !== liveInitialValue) {
+      reinitializeField(name, liveInitialValue, validate);
     }
   }
 
@@ -56,8 +56,7 @@ class FieldRenderer extends React.Component {
   };
 
   render() {
-    const { render, name, format, field } = this.props;
-    const { value, ...fieldState } = field;
+    const { render, name, value, initialValue, format, field } = this.props;
 
     return (
       <FormRenderer
@@ -70,9 +69,10 @@ class FieldRenderer extends React.Component {
             name,
             value: format ? format(value) : value
           },
-          ...fieldState
+          ...field,
+          initialValue
         }}
-        trigger={field}
+        triggers={[field, value, initialValue]}
       />
     );
   }

@@ -52,18 +52,14 @@ describe('Yarfl.Field', () => {
       expect(passwordArgs.input.name).toBe('password');
       expect(passwordArgs.input.value).toBe('');
 
-      // TODO: ideally this should be 1, but then we'd have to make the
-      // mechanism that prevents re-rendering in FormRenderer smarter (shallow
-      // equal 'trigger'?)
-      expect(renderRemember.mock.calls.length).toBe(2);
-      const rememberArgs = renderRemember.mock.calls[1][0];
+      expect(renderRemember.mock.calls.length).toBe(1);
+      const rememberArgs = renderRemember.mock.calls[0][0];
       expect(rememberArgs.input.name).toBe('remember');
       expect(rememberArgs.input.value).toBe('yes');
       expect(rememberArgs.initialValue).toBe('yes');
 
-      // TODO: same as above
-      expect(renderName.mock.calls.length).toBe(2);
-      const nameArgs = renderName.mock.calls[1][0];
+      expect(renderName.mock.calls.length).toBe(1);
+      const nameArgs = renderName.mock.calls[0][0];
       expect(nameArgs.input.name).toBe('name');
       expect(nameArgs.input.value).toBe('Sherlock');
       expect(nameArgs.initialValue).toBe('Sherlock');
@@ -186,12 +182,30 @@ describe('Yarfl.Field', () => {
       />
     );
 
+    expect(renderName.mock.calls.length).toBe(1);
+    expect(renderName.mock.calls[0][0].input.value).toBe('initial name');
+    expect(renderStreet.mock.calls.length).toBe(1);
+    expect(renderStreet.mock.calls[0][0].input.value).toBe('initial street');
+    expect(renderZip.mock.calls.length).toBe(1);
+    expect(renderZip.mock.calls[0][0].input.value).toBe('initial zip');
+
+    root.update(
+      <App
+        initialValues={{
+          name: 'other name'
+        }}
+        initialStreet="other street"
+        initialZip="other zip"
+        enableReinitialize
+      />
+    );
+
     expect(renderName.mock.calls.length).toBe(2);
-    expect(renderName.mock.calls[1][0].input.value).toBe('initial name');
+    expect(renderName.mock.calls[1][0].input.value).toBe('other name');
     expect(renderStreet.mock.calls.length).toBe(2);
-    expect(renderStreet.mock.calls[1][0].input.value).toBe('initial street');
+    expect(renderStreet.mock.calls[1][0].input.value).toBe('other street');
     expect(renderZip.mock.calls.length).toBe(2);
-    expect(renderZip.mock.calls[1][0].input.value).toBe('initial zip');
+    expect(renderZip.mock.calls[1][0].input.value).toBe('other zip');
 
     root.update(
       <App
@@ -204,27 +218,9 @@ describe('Yarfl.Field', () => {
       />
     );
 
-    expect(renderName.mock.calls.length).toBe(3);
-    expect(renderName.mock.calls[2][0].input.value).toBe('other name');
-    expect(renderStreet.mock.calls.length).toBe(3);
-    expect(renderStreet.mock.calls[2][0].input.value).toBe('other street');
-    expect(renderZip.mock.calls.length).toBe(3);
-    expect(renderZip.mock.calls[1][0].input.value).toBe('initial zip');
-
-    root.update(
-      <App
-        initialValues={{
-          name: 'other name'
-        }}
-        initialStreet="other street"
-        initialZip="other zip"
-        enableReinitialize
-      />
-    );
-
-    expect(renderName.mock.calls.length).toBe(3);
-    expect(renderStreet.mock.calls.length).toBe(3);
-    expect(renderZip.mock.calls.length).toBe(3);
+    expect(renderName.mock.calls.length).toBe(2);
+    expect(renderStreet.mock.calls.length).toBe(2);
+    expect(renderZip.mock.calls.length).toBe(2);
   });
 
   describe('onChange', () => {
@@ -448,7 +444,7 @@ describe('Yarfl.Field', () => {
       <Yarfl.Form onSubmit={handleSubmit}>{renderForm}</Yarfl.Form>
     );
 
-    expect(renderEmail.mock.calls[1][0].input.value).toBe('test email address');
+    expect(renderEmail.mock.calls[0][0].input.value).toBe('test email address');
     renderForm.mock.calls[0][0].submit({
       preventDefault: noop
     });
@@ -457,7 +453,7 @@ describe('Yarfl.Field', () => {
     });
 
     renderEmail.mock.calls[0][0].input.onChange('test 2');
-    expect(renderEmail.mock.calls[3][0].input.value).toBe('test 2');
+    expect(renderEmail.mock.calls[2][0].input.value).toBe('test 2');
 
     renderForm.mock.calls[0][0].submit({
       preventDefault: noop
@@ -468,7 +464,7 @@ describe('Yarfl.Field', () => {
 
     renderEmail.mock.calls[0][0].input.onFocus();
     renderEmail.mock.calls[0][0].input.onBlur('test 3');
-    expect(renderEmail.mock.calls[5][0].input.value).toBe('test 3');
+    expect(renderEmail.mock.calls[4][0].input.value).toBe('test 3');
 
     renderForm.mock.calls[0][0].submit({
       preventDefault: noop

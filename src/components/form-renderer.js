@@ -17,7 +17,11 @@ class FormRenderer extends React.Component {
   shouldComponentUpdate(nextProps) {
     return (
       nextProps.render !== this.props.render ||
-      nextProps.trigger !== this.props.trigger
+      nextProps.trigger !== this.props.trigger ||
+      nextProps.triggers.length !== this.props.triggers.length ||
+      nextProps.triggers.some(
+        (trigger, i) => trigger !== this.props.triggers[i]
+      )
     );
   }
 
@@ -27,5 +31,9 @@ class FormRenderer extends React.Component {
     return render(props);
   }
 }
+
+FormRenderer.defaultProps = {
+  triggers: []
+};
 
 export default FormRenderer;

@@ -105,10 +105,10 @@ describe('Yarfl.SubField', () => {
       </Yarfl.Form>
     );
 
-    expect(renderStreet.mock.calls.length).toBe(2);
-    expect(renderStreet.mock.calls[1][0].input.value).toBe('some street');
+    expect(renderStreet.mock.calls.length).toBe(1);
+    expect(renderStreet.mock.calls[0][0].input.value).toBe('some street');
 
-    expect(renderZip.mock.calls.length).toBe(2);
-    expect(renderZip.mock.calls[1][0].input.value).toBe('1234');
+    expect(renderZip.mock.calls.length).toBe(1);
+    expect(renderZip.mock.calls[0][0].input.value).toBe('1234');
   });
 });

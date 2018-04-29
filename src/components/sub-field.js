@@ -15,9 +15,17 @@ import Context from './context';
 const SubField = ({ name: subFieldName, children }) => (
   <Context.Consumer>
     {({
-      functions: { registerField, changeField, focusField, blurField, reinitializeField },
+      functions: {
+        registerField,
+        changeField,
+        focusField,
+        blurField,
+        reinitializeField
+      },
       initialValues,
       fields,
+      values,
+      initial,
       ...state
     }) => {
       const newContext = {
@@ -36,11 +44,17 @@ const SubField = ({ name: subFieldName, children }) => (
             return blurField(`${subFieldName}.${name}`, value, validate);
           },
           reinitializeField: (name, value, validate) => {
-            return reinitializeField(`${subFieldName}.${name}`, value, validate);
+            return reinitializeField(
+              `${subFieldName}.${name}`,
+              value,
+              validate
+            );
           }
         },
         initialValues: initialValues && initialValues[subFieldName],
-        fields: (fields[subFieldName] && fields[subFieldName]) || {}
+        fields: (fields[subFieldName] && fields[subFieldName]) || {},
+        values: values[subFieldName] || {},
+        initial: initial[subFieldName] || {}
       };
 
       return <Context.Provider value={newContext}>{children}</Context.Provider>;

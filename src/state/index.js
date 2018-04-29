@@ -1,13 +1,11 @@
 import produce from 'immer';
 
 const defaultFieldState = {
-  value: '',
   error: undefined,
   active: false,
   invalid: false,
   valid: true,
   touched: false,
-  initialValue: '',
   dirty: false,
   pristine: true,
   __field__: true
@@ -15,6 +13,8 @@ const defaultFieldState = {
 
 const defaultRootState = {
   fields: {},
+  values: {},
+  initial: {},
   formState: {
     submitting: false,
     error: undefined,
@@ -35,13 +35,6 @@ const produceField = (
     Object.entries(changes).forEach(([key, value]) => {
       draftField[key] = value;
     });
-
-    if (isRegistration || isInitialization) {
-      draftField.initialValue = draftField.value;
-    }
-
-    draftField.dirty = draftField.value !== draftField.initialValue;
-    draftField.pristine = draftField.value === draftField.initialValue;
 
     draftField.invalid = !!draftField.error;
     draftField.valid = !draftField.error;
@@ -64,7 +57,7 @@ const setDeepField = (
     const nextName = path[i];
 
     if (i === pathLength - 1) {
-      if (field[nextName] && isRegistration) {
+      if (field[nextName] !== undefined && isRegistration) {
         return;
       }
 
@@ -76,6 +69,25 @@ const setDeepField = (
       );
     } else {
       field = field[nextName] = field[nextName] || {};
+    }
+  }
+};
+
+const setDeepValue = (values, path, value, overrideNodes) => {
+  let valueObj = values;
+  const pathLength = path.length;
+  for (let i = 0; i < pathLength; i++) {
+    const nextName = path[i];
+
+    if (i === pathLength - 1) {
+      if (valueObj[nextName] !== undefined && !overrideNodes) {
+        return valueObj[nextName];
+      }
+
+      valueObj[nextName] = value;
+      return value;
+    } else {
+      valueObj = valueObj[nextName] = valueObj[nextName] || {};
     }
   }
 };
@@ -100,25 +112,55 @@ const everyField = (fields, callback) => {
   });
 };
 
-const changeField = (path, changes, isRegistration, isInitialization) =>
+const changeField = (
+  path,
+  { value, ...changes },
+  isRegistration,
+  isInitialization
+) =>
   produce(draftState => {
+    const storedValue = setDeepValue(
+      draftState.values,
+      path,
+      value,
+      !isRegistration
+    );
+    const storedInitialValue = setDeepValue(
+      draftState.initial,
+      path,
+      value,
+      isInitialization
+    );
+    const fieldPristine = storedValue === storedInitialValue;
     setDeepField(
       draftState.fields,
       path,
-      changes,
+      {
+        ...changes,
+        dirty: !fieldPristine,
+        pristine: fieldPristine
+      },
       isRegistration,
       isInitialization
     );
+    // TODO: optimize this by not checking if the state of the current field
+    // confirms the form state (like below for dirty/pristine)
     draftState.formState.valid = everyField(
       draftState.fields,
       field => field.valid
     );
     draftState.formState.invalid = !draftState.formState.valid;
-    draftState.formState.pristine = everyField(
-      draftState.fields,
-      field => field.pristine
-    );
-    draftState.formState.dirty = !draftState.formState.pristine;
+
+    if (
+      (draftState.formState.pristine && !fieldPristine) ||
+      (draftState.formState.dirty && fieldPristine)
+    ) {
+      draftState.formState.pristine = everyField(
+        draftState.fields,
+        field => field.pristine
+      );
+      draftState.formState.dirty = !draftState.formState.pristine;
+    }
   });
 
 const submit = () =>
