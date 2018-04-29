@@ -295,16 +295,72 @@ Whether the form is submitting.
 Whenever an error is thrown in `onSubmit`, that error will be passed here.
 `undefined` if no failed form submission occurred yet.
 
-#### valid
+##### valid
 
 Opposite of invalid. True if _all_ fields in the form are valid, false
 otherwise.
 
-#### invalid
+##### invalid
 
 Opposite of valid. True if _any_ field in the form is invalid, false otherwise.
 
-#### dirty
+##### dirty
 
 True if the current values of the form are not deep equal to the initial values,
 false otherwise.
+
+#### children
+
+Whatever is returned here will be rendered by Yarfl.
+
+### <Yarfl.Value />
+
+Use this component to use a (readonly) value from the form. Automatically
+debounces any changes to keep the form performant, even if a heavy render
+depends on a value from the form.
+
+_Sidenote: this component works by keeping a copy of the value in local state,
+and updating this after the debounce passes. My idea is that this could easily
+be translated to a version that works with async React by changing the debounce
+to a low priority state update. This would protect high priority updates
+(re-rendering the input field the user is typing in), but allow the low priority
+component that needs the value to render as soon as possible._
+
+```js
+import React from 'react';
+import Yarfl from 'yarfl';
+
+const SimpleForm = () => (
+  <Yarf.Form onSubmit={() => {}}>
+    {() => (
+      <React.Fragent>
+        <form>
+          <Yarfl.Field name="treeDepth">{/* */}</Yarfl.Field>
+        </form>
+        <Yarfl.Value name="treeDepth">
+          {({ value }) => <BalancedBinaryTree depth={value} />}
+        </Yarfl.Value>
+      </React.Fragent>
+    )}
+  </Yarf.Form>
+);
+```
+
+#### Props passed to the render function
+
+##### value
+
+The debounced value of the field.
+
+#### name
+
+The name of the field.
+
+#### children
+
+Whatever is returned here will be rendered by Yarfl.
+
+#### debounceMs
+
+The amount of ms to debounce. Defaults to 50. Pass `null` or `0` to disable
+debounce.
