@@ -119,27 +119,33 @@ const changeField = (
   isInitialization
 ) =>
   produce(draftState => {
-    const storedValue = setDeepValue(
-      draftState.values,
-      path,
-      value,
-      !isRegistration
-    );
-    const storedInitialValue = setDeepValue(
-      draftState.initial,
-      path,
-      value,
-      isInitialization
-    );
-    const fieldPristine = storedValue === storedInitialValue;
+    let newFieldPristine;
+    if (value !== undefined) {
+      const storedValue = setDeepValue(
+        draftState.values,
+        path,
+        value,
+        !isRegistration
+      );
+      const storedInitialValue = setDeepValue(
+        draftState.initial,
+        path,
+        value,
+        isInitialization
+      );
+      newFieldPristine = storedValue === storedInitialValue;
+    }
+
     setDeepField(
       draftState.fields,
       path,
-      {
-        ...changes,
-        dirty: !fieldPristine,
-        pristine: fieldPristine
-      },
+      newFieldPristine !== undefined
+        ? {
+            ...changes,
+            dirty: !newFieldPristine,
+            pristine: newFieldPristine
+          }
+        : changes,
       isRegistration,
       isInitialization
     );
@@ -152,8 +158,9 @@ const changeField = (
     draftState.formState.invalid = !draftState.formState.valid;
 
     if (
-      (draftState.formState.pristine && !fieldPristine) ||
-      (draftState.formState.dirty && fieldPristine)
+      newFieldPristine !== undefined &&
+      ((draftState.formState.pristine && !newFieldPristine) ||
+        (draftState.formState.dirty && newFieldPristine))
     ) {
       draftState.formState.pristine = everyField(
         draftState.fields,

@@ -320,6 +320,27 @@ describe('Yarfl.Field', () => {
       expect(renderEmail.mock.calls.length).toBe(2);
       expect(renderEmail.mock.calls[1][0].active).toBe(true);
     });
+
+    test('should not clear values', () => {
+      const renderEmail = jest.fn(nullRender);
+
+      TestRenderer.create(
+        <Yarfl.Form onSubmit={noop}>
+          {({}) => (
+            <React.Fragment>
+              <Yarfl.Field name="email">{renderEmail}</Yarfl.Field>
+            </React.Fragment>
+          )}
+        </Yarfl.Form>
+      );
+
+      const emailArgs = renderEmail.mock.calls[0][0];
+      emailArgs.input.onChange('some value');
+      emailArgs.input.onFocus();
+
+      expect(renderEmail.mock.calls.length).toBe(3);
+      expect(renderEmail.mock.calls[2][0].input.value).toBe('some value');
+    });
   });
 
   describe('onBlur', () => {
