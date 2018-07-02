@@ -126,16 +126,20 @@ class Form extends React.Component {
   state = {
     ...defaultRootState,
     functions: this.functions,
-    initialValues: this.props.initialValues
+    initialValues: this.props.initialValues,
+    initial: this.props.initialValues || defaultRootState.initial,
+    values: this.props.initialValues || defaultRootState.initial
   };
 
   static getDerivedStateFromProps(props, state) {
     if (
       props.enableReinitialize &&
-      !isEqual(state.initialValues, props.initialValue)
+      !isEqual(state.initialValues, props.initialValues)
     ) {
       return {
-        initialValues: props.initialValues
+        initialValues: props.initialValues,
+        initial: props.initialValues || state.initial,
+        values: props.initialValues || state.initial
       };
     }
 
@@ -146,6 +150,8 @@ class Form extends React.Component {
     this.unmounted = true;
   }
 
+  // TODO: we pass everything in the state down to context consumers, we might
+  // want to be a bit more picky. For example: initialValues is no longer needed
   getProviderValue = memoize((enableReinitialize, state) => {
     const value = {
       enableReinitialize,

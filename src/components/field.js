@@ -26,7 +26,6 @@ class Field extends React.Component {
             blurField,
             reinitializeField
           },
-          initialValues,
           enableReinitialize,
           fields,
           values,
@@ -34,15 +33,9 @@ class Field extends React.Component {
         }) => {
           const field = fields[name] || defaultFieldState;
 
-          const initialValueFromForm = initialValues && initialValues[name];
           const initialValueFromState = initial[name];
 
-          let liveInitialValue;
-          if (initialValueFromForm !== undefined) {
-            liveInitialValue = initialValueFromForm;
-          } else if (initialValueFromField !== undefined) {
-            liveInitialValue = initialValueFromField;
-          }
+          let liveInitialValue = initialValueFromField;
 
           let initialValue;
           if (initialValueFromState !== undefined) {

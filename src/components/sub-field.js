@@ -51,7 +51,6 @@ const SubField = ({ name: subFieldName, children }) => (
             );
           }
         },
-        initialValues: initialValues && initialValues[subFieldName],
         fields: (fields[subFieldName] && fields[subFieldName]) || {},
         values: values[subFieldName] || {},
         initial: initial[subFieldName] || {}

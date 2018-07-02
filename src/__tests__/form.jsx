@@ -247,4 +247,61 @@ describe('Yarfl.Form', () => {
     expect(renderEmail.mock.calls.length).toBe(3);
     expect(renderPassword.mock.calls.length).toBe(2);
   });
+
+  /**
+   * TODO: I haven't considered yet what should (and currently does) happen when
+   * initialValues changes. I think I would expect the form to reset to the new
+   * initialValues (and drop all changed values) + every field's specific
+   * initialValue. Right now, I suspect the field's initialValue gets lost when
+   * the form reinitializes. Might want to add a test for this and fix if broken
+   */
+  describe('initialValues', () => {
+    test('end up in submit if corresponding field is not rendered', () => {
+      const renderForm = jest.fn(nullRender);
+      const handleSubmit = jest.fn(noop);
+
+      const initialValues = {
+        firstName: 'test',
+        lastName: 'value'
+      };
+
+      TestRenderer.create(
+        <Yarfl.Form initialValues={initialValues} onSubmit={handleSubmit}>
+          {renderForm}
+        </Yarfl.Form>
+      );
+      renderForm.mock.calls[0][0].submit({
+        preventDefault: noop
+      });
+      expect(handleSubmit).toBeCalledWith(initialValues);
+    });
+
+    test('end up in submit if they change later on', () => {
+      const renderForm = jest.fn(nullRender);
+      const handleSubmit = jest.fn(noop);
+
+      const initialValues = {
+        firstName: 'test',
+        lastName: 'value'
+      };
+
+      const root = TestRenderer.create(
+        <Yarfl.Form onSubmit={handleSubmit}>{renderForm}</Yarfl.Form>
+      );
+
+      root.update(
+        <Yarfl.Form
+          initialValues={initialValues}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          {renderForm}
+        </Yarfl.Form>
+      );
+      renderForm.mock.calls[0][0].submit({
+        preventDefault: noop
+      });
+      expect(handleSubmit).toBeCalledWith(initialValues);
+    });
+  });
 });
