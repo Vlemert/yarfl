@@ -249,46 +249,59 @@ describe('Yarfl.Form', () => {
   });
 
   /**
-   * This test shouldn't fail, but it does because we don't put initialValues
-   * in the state. This is an oversight. I think we need to immediately update
-   * the state (values) with initialValues during construction of Form, and when
-   * initialValues changes and enableReinitialize is true. This should probably
-   * be a deep merge (any field that is not set by initialValues should not be
-   * cleared)
-   *
-   * Some thoughts on this idea:
-   * - that would remove the need to pass initialValues down in the context, as
-   *   the value would always be available through values
-   * - we can't do the same for field level initialValue, which can only be set
-   *   after the field mounts. Is this a problem?
-   * - does the field level initialValue suffer from the same issues? I don't
-   *   think so as that will register and update the value, but double check
-   * - whatever solution we come up with should also work with the Value
-   *   component that is in the works (which is where this bug was discovered)
+   * TODO: I haven't considered yet what should (and currently does) happen when
+   * initialValues changes. I think I would expect the form to reset to the new
+   * initialValues (and drop all changed values) + every field's specific
+   * initialValue. Right now, I suspect the field's initialValue gets lost when
+   * the form reinitializes. Might want to add a test for this and fix if broken
    */
-  test('initialValues end up in submit', () => {
-    const renderForm = jest.fn(nullRender);
-    const handleSubmit = jest.fn(noop);
+  describe('initialValues', () => {
+    test('end up in submit if corresponding field is not rendered', () => {
+      const renderForm = jest.fn(nullRender);
+      const handleSubmit = jest.fn(noop);
 
-    TestRenderer.create(
-      <Yarfl.Form
-        initialValues={{
-          firstName: 'test',
-          lastName: 'value'
-        }}
-        onSubmit={handleSubmit}
-      >
-        {renderForm}
-      </Yarfl.Form>
-    );
+      const initialValues = {
+        firstName: 'test',
+        lastName: 'value'
+      };
 
-    renderForm.mock.calls[0][0].submit({
-      preventDefault: noop
+      TestRenderer.create(
+        <Yarfl.Form initialValues={initialValues} onSubmit={handleSubmit}>
+          {renderForm}
+        </Yarfl.Form>
+      );
+      renderForm.mock.calls[0][0].submit({
+        preventDefault: noop
+      });
+      expect(handleSubmit).toBeCalledWith(initialValues);
     });
 
-    expect(handleSubmit).toBeCalledWith({
-      fistName: 'test',
-      lastName: 'value'
+    test('end up in submit if they change later on', () => {
+      const renderForm = jest.fn(nullRender);
+      const handleSubmit = jest.fn(noop);
+
+      const initialValues = {
+        firstName: 'test',
+        lastName: 'value'
+      };
+
+      const root = TestRenderer.create(
+        <Yarfl.Form onSubmit={handleSubmit}>{renderForm}</Yarfl.Form>
+      );
+
+      root.update(
+        <Yarfl.Form
+          initialValues={initialValues}
+          onSubmit={handleSubmit}
+          enableReinitialize
+        >
+          {renderForm}
+        </Yarfl.Form>
+      );
+      renderForm.mock.calls[0][0].submit({
+        preventDefault: noop
+      });
+      expect(handleSubmit).toBeCalledWith(initialValues);
     });
   });
 });
