@@ -3,6 +3,7 @@ import TestRenderer from 'react-test-renderer';
 
 import { noop, nullRender } from './util';
 import Yarfl from '../index';
+import Context from '../components/context';
 
 const consoleError = console.error;
 
@@ -24,6 +25,27 @@ describe('Yarfl.Form', () => {
     );
 
     expect(root.toJSON()).toBe('form!');
+  });
+
+  /**
+   * This test kind of tests internals but I don't see a way to test this in
+   * an other way right now.
+   */
+  test("doesn't trigger context consumers if nothing changes", () => {
+    const renderContext = jest.fn(nullRender);
+    const renderForm = () => (
+      <Context.Consumer>{renderContext}</Context.Consumer>
+    );
+
+    const root = TestRenderer.create(
+      <Yarfl.Form onSubmit={noop}>{renderForm}</Yarfl.Form>
+    );
+
+    expect(renderContext.mock.calls.length).toBe(1);
+
+    root.update(<Yarfl.Form onSubmit={noop}>{renderForm}</Yarfl.Form>);
+
+    expect(renderContext.mock.calls.length).toBe(1);
   });
 
   test("doesn't block renders when the render function changes", () => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'react-fast-compare';
+import memoize from 'memoize-one';
 
 import { pathToArray } from '../util/index';
 import { defaultRootState, actions } from '../state/index';
@@ -125,36 +126,44 @@ class Form extends React.Component {
   state = {
     ...defaultRootState,
     functions: this.functions,
-    initialValues: this.props.initialValues,
-    enableReinitialize: this.props.enableReinitialize
+    initialValues: this.props.initialValues
   };
 
   static getDerivedStateFromProps(props, state) {
-    const changes = {};
-
-    if (state.enableReinitialize !== props.enableReinitialize) {
-      changes.enableReinitialize = props.enableReinitialize;
-    }
-
     if (
       props.enableReinitialize &&
       !isEqual(state.initialValues, props.initialValue)
     ) {
-      changes.initialValues = props.initialValues;
+      return {
+        initialValues: props.initialValues
+      };
     }
 
-    return changes;
+    return null;
   }
 
   componentWillUnmount() {
     this.unmounted = true;
   }
 
+  getProviderValue = memoize((enableReinitialize, state) => {
+    const value = {
+      enableReinitialize,
+      ...state
+    };
+    return value;
+  });
+
   render() {
     const { children } = this.props;
 
+    const providerValue = this.getProviderValue(
+      this.props.enableReinitialize,
+      this.state
+    );
+
     return (
-      <Context.Provider value={this.state}>
+      <Context.Provider value={providerValue}>
         <FormRenderer
           render={children}
           props={{
