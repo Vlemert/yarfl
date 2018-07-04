@@ -5,7 +5,6 @@ import memoize from 'memoize-one';
 
 import { pathToArray } from '../util/index';
 import { defaultRootState, actions } from '../state/index';
-import FormRenderer from './form-renderer';
 import Context from './context';
 
 class Form extends React.Component {
@@ -160,6 +159,12 @@ class Form extends React.Component {
     return value;
   });
 
+  memoizedRender = memoize(render =>
+    render({
+      submit: this.handleSubmit
+    })
+  );
+
   render() {
     const { children } = this.props;
 
@@ -170,12 +175,7 @@ class Form extends React.Component {
 
     return (
       <Context.Provider value={providerValue}>
-        <FormRenderer
-          render={children}
-          props={{
-            submit: this.handleSubmit
-          }}
-        />
+        {this.memoizedRender(children)}
       </Context.Provider>
     );
   }

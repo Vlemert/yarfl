@@ -1,7 +1,5 @@
 import React from 'react';
-
-import { defaultFieldState } from '../state/index';
-import FormRenderer from './form-renderer';
+import memoize from 'memoize-one';
 
 function isEvent(eventOrValue) {
   return (
@@ -59,25 +57,31 @@ class FieldRenderer extends React.Component {
     blurField(name, parse ? parse(value) : value, validate);
   };
 
+  memoizedRender = memoize(
+    (render, name, value, initialValue, format, field) =>
+      render({
+        input: {
+          onChange: this.onChange,
+          onFocus: this.onFocus,
+          onBlur: this.onBlur,
+          name,
+          value: format ? format(value) : value
+        },
+        ...field,
+        initialValue
+      })
+  );
+
   render() {
     const { render, name, value, initialValue, format, field } = this.props;
 
-    return (
-      <FormRenderer
-        render={render}
-        props={{
-          input: {
-            onChange: this.onChange,
-            onFocus: this.onFocus,
-            onBlur: this.onBlur,
-            name,
-            value: format ? format(value) : value
-          },
-          ...field,
-          initialValue
-        }}
-        triggers={[field, value, initialValue]}
-      />
+    return this.memoizedRender(
+      render,
+      name,
+      value,
+      initialValue,
+      format,
+      field
     );
   }
 }
