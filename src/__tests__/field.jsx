@@ -260,9 +260,6 @@ describe('Yarfl.Field', () => {
       expect(updatedEmailArgs.input.value).toBe('changed text');
       expect(updatedEmailArgs.initialValue).toBe('');
       expect(updatedEmailArgs.dirty).toBe(true);
-      expect(updatedEmailArgs.input.onChange).toBe(emailArgs.input.onChange);
-      expect(updatedEmailArgs.input.onFocus).toBe(emailArgs.input.onFocus);
-      expect(updatedEmailArgs.input.onBlur).toBe(emailArgs.input.onBlur);
     });
 
     test('causes validate to be called', () => {

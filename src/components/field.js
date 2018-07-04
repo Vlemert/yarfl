@@ -1,11 +1,81 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import memoize from 'memoize-one';
 
 import { defaultFieldState } from '../state/index';
-import FieldRenderer from './field-renderer';
 import Context from './context';
 
+function isEvent(eventOrValue) {
+  return (
+    eventOrValue && eventOrValue.preventDefault && eventOrValue.stopPropagation
+  );
+}
+
+function getValue(eventOrValue) {
+  if (!isEvent(eventOrValue)) {
+    return eventOrValue;
+  }
+
+  return eventOrValue.target.value;
+}
+
+class FieldLifecycle extends React.Component {
+  componentDidMount() {
+    this.props.didMount();
+  }
+
+  componentDidUpdate() {
+    this.props.didUpdate();
+  }
+
+  render() {
+    return this.props.render();
+  }
+}
+
 class Field extends React.Component {
+  memoizedRender = memoize(
+    (
+      render,
+      name,
+      value,
+      initialValue,
+      field,
+      format,
+      parse,
+      validate,
+      changeField,
+      focusField,
+      blurField
+    ) => {
+      const onChange = e => {
+        const value = getValue(e);
+        changeField(name, parse ? parse(value) : value, validate);
+      };
+
+      const onFocus = e => {
+        focusField(name);
+      };
+
+      const onBlur = e => {
+        const value = getValue(e);
+        blurField(name, parse ? parse(value) : value, validate);
+      };
+
+      return render({
+        input: {
+          onChange,
+          onFocus,
+          onBlur,
+          name,
+          value: format ? format(value) : value
+        },
+        ...field,
+        initialValue
+      });
+    }
+  );
+
   render() {
     const {
       name,
@@ -35,42 +105,47 @@ class Field extends React.Component {
 
           const initialValueFromState = initial[name];
 
-          let liveInitialValue = initialValueFromField;
-
-          let initialValue;
-          if (initialValueFromState !== undefined) {
-            initialValue = initialValueFromState;
-          } else if (liveInitialValue !== undefined) {
-            initialValue = liveInitialValue;
-          } else {
-            initialValue = '';
-          }
+          const initialValue =
+            initialValueFromState || initialValueFromField || '';
 
           const valueFromState = values[name];
-          let value;
-          if (valueFromState !== undefined) {
-            value = valueFromState;
-          } else {
-            value = initialValue;
-          }
+          const value = valueFromState || initialValue;
+
+          const didMount = () => {
+            registerField(name, value, validate);
+          };
+
+          const didUpdate = () => {
+            // TODO: it appears this never happens in the test cases we have
+            // right now.
+            if (
+              enableReinitialize &&
+              initialValueFromField !== undefined &&
+              initialValue !== initialValueFromField
+            ) {
+              reinitializeField(name, initialValueFromField, validate);
+            }
+          };
 
           return (
-            <FieldRenderer
-              name={name}
-              render={children}
-              validate={validate}
-              registerField={registerField}
-              changeField={changeField}
-              focusField={focusField}
-              blurField={blurField}
-              field={field}
-              value={value}
-              enableReinitialize={enableReinitialize}
-              initialValue={initialValue}
-              liveInitialValue={liveInitialValue}
-              reinitializeField={reinitializeField}
-              parse={parse}
-              format={format}
+            <FieldLifecycle
+              render={() =>
+                this.memoizedRender(
+                  children,
+                  name,
+                  value,
+                  initialValue,
+                  field,
+                  format,
+                  parse,
+                  validate,
+                  changeField,
+                  focusField,
+                  blurField
+                )
+              }
+              didMount={didMount}
+              didUpdate={didUpdate}
             />
           );
         }}
