@@ -6,29 +6,31 @@ import Yarfl from '../index';
 
 describe('Yarfl.FieldArray', () => {
   test('', () => {
-    TestRenderer.create(
-      <Yarfl.Form onSubmit={noop}>
-        {() => (
-          <Yarfl.FieldArray name="friends">
-            {({ insert, append, items, renderItems }) => (
-              <React.Fragment>
-                {renderItems(({ item, index, remove }) => (
-                  <React.Fragment>
-                    <Yarfl.Field name="firstName">{() => null}</Yarfl.Field>
-                    <Yarfl.Field name="lastName">{() => null}</Yarfl.Field>
-                    <button onClick={() => remove()}>delete friend</button>
-                  </React.Fragment>
-                ))}
-                <button onClick={() => append({ firstName: '', lastName: '' })}>
-                  add friend
-                </button>
-              </React.Fragment>
-            )}
-          </Yarfl.FieldArray>
-        )}
-      </Yarfl.Form>
-    );
+    // example
+    // TestRenderer.create(
+    //   <Yarfl.Form onSubmit={noop}>
+    //     {() => (
+    //       <Yarfl.FieldArray name="friends">
+    //         {({ insert, append, items, renderItems }) => (
+    //           <React.Fragment>
+    //             {renderItems(({ item, index, remove }) => (
+    //               <React.Fragment>
+    //                 <Yarfl.Field name="firstName">{() => null}</Yarfl.Field>
+    //                 <Yarfl.Field name="lastName">{() => null}</Yarfl.Field>
+    //                 <button onClick={() => remove()}>delete friend</button>
+    //               </React.Fragment>
+    //             ))}
+    //             <button onClick={() => append({ firstName: '', lastName: '' })}>
+    //               add friend
+    //             </button>
+    //           </React.Fragment>
+    //         )}
+    //       </Yarfl.FieldArray>
+    //     )}
+    //   </Yarfl.Form>
+    // );
 
+    // actual test
     const renderFirstName = jest.fn(nullRender);
     const renderLastName = jest.fn(nullRender);
     const renderFriend = jest.fn(({ item, index, remove }) => (
@@ -62,7 +64,9 @@ describe('Yarfl.FieldArray', () => {
       firstName: 'test first name',
       lastName: 'test last name'
     };
+    console.log('---- before append');
     renderFriends.mock.calls[0][0].append(item1);
+    console.log('---- after append');
     // TODO: this could theoretically be reduced to 2 if we avoid extra renders
     // by doing a deep equal check in FieldArray
     expect(renderFriends.mock.calls.length).toBe(3);

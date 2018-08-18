@@ -67,7 +67,25 @@ const setDeepField = (
         isInitialization
       );
     } else {
-      field = field[nextName] = field[nextName] || {};
+      const nextIsArray = !isNaN(parseInt(path[i + 1]));
+      field[nextName] = field[nextName] || (nextIsArray ? [] : {});
+      field = field[nextName];
+    }
+  }
+};
+
+const setDeepFieldArray = (fields, path, value) => {
+  let field = fields;
+  const pathLength = path.length;
+  for (let i = 0; i < pathLength; i++) {
+    const nextName = path[i];
+
+    if (i === pathLength - 1) {
+      field[nextName] = value;
+    } else {
+      const nextIsArray = !isNaN(parseInt(path[i + 1]));
+      field[nextName] = field[nextName] || (nextIsArray ? [] : {});
+      field = field[nextName];
     }
   }
 };
@@ -163,6 +181,12 @@ const changeField = (
     );
   });
 
+const changeFieldArray = (path, { value }) =>
+  produce(draftState => {
+    setDeepFieldArray(draftState.values, path, value);
+    setDeepFieldArray(draftState.initial, path, value);
+  });
+
 const submit = () =>
   produce(draftState => {
     setAllFields(draftState.fields, { touched: true });
@@ -184,6 +208,7 @@ const submitFail = error =>
 
 const actions = {
   changeField,
+  changeFieldArray,
   submit,
   submitSuccess,
   submitFail

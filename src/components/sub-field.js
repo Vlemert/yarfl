@@ -64,7 +64,7 @@ class SubField extends React.Component {
           const newContext = this.memoizedGetSubContext(
             subFunctions,
             enableReinitialize,
-            (fields[subFieldName] && fields[subFieldName]) || {},
+            fields[subFieldName] || {},
             values[subFieldName] || {},
             initial[subFieldName] || {},
             subFieldName

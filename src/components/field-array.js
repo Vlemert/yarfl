@@ -10,6 +10,8 @@ import Context from './context';
  * - expose a new state to sub consumers, where the field functions are scoped
  *   to that same field
  */
+const empty = [];
+
 class FieldArray extends React.Component {
   memoizedGetFieldArrayFunctions = memoize((functions, fieldArrayName) => {
     const {
@@ -19,6 +21,7 @@ class FieldArray extends React.Component {
       blurField,
       reinitializeField
     } = functions;
+    console.log('get array functions');
 
     return {
       registerField: (name, value, validate) => {
@@ -39,53 +42,121 @@ class FieldArray extends React.Component {
     };
   });
 
+  memoizedGetHelperFunctions = memoize(
+    (
+      fieldArrayFunctions,
+      changeFieldArray,
+      fieldArrayName,
+      items,
+      fieldArrayFields,
+      fieldArrayValues,
+      fieldArrayInitial,
+      enableReinitialize
+    ) => {
+      console.log('get helper functions');
+      // console.log('render');
+      console.log(this.last === fieldArrayFields);
+      console.log(this.last, '----', fieldArrayFields);
+      this.last = fieldArrayFields;
+      const insert = (index, item) => {};
+      const append = item => {
+        // TODO: validate? < don't know what I meant with that
+
+        /**
+         * So there's some stuff that should happen here. Appending is easier
+         * because we just add the item to the end.
+         */
+        changeFieldArray(fieldArrayName, [...items, item]);
+      };
+      const removeAt = index => {};
+      const renderItems = renderItem =>
+        items.map((item, index) => {
+          const newContext = {
+            functions: fieldArrayFunctions,
+            fields: fieldArrayFields[index] || {},
+            values: fieldArrayValues[index] || {},
+            initial: fieldArrayInitial[index] || {},
+            enableReinitialize
+          };
+
+          const remove = () => removeAt(index);
+
+          return (
+            <Context.Provider key={index} value={newContext}>
+              {renderItem({ item, index, remove })}
+            </Context.Provider>
+          );
+        });
+
+      return {
+        insert,
+        append,
+        removeAt,
+        renderItems
+      };
+    }
+  );
+
+  memoizedRender = memoize((render, items, insert, append, renderItems) => {
+    // console.log('render');
+    // console.log(a === insert);
+    // a = insert;
+    return render({ items, insert, append, renderItems });
+  });
+
   render() {
     const { name: fieldArrayName, children } = this.props;
 
     return (
       <Context.Consumer>
-        {({ functions, initialValues, fields, values, initial, ...state }) => {
+        {({ functions, fields, values, initial, enableReinitialize }) => {
           const fieldArrayFunctions = this.memoizedGetFieldArrayFunctions(
             functions,
             fieldArrayName
           );
 
-          // console.log(fields, values);
           const items = values[fieldArrayName] || [];
-          const insert = (index, item) => {};
-          const append = item => {
-            // TODO: validate?
-            functions.changeField(fieldArrayName, [...items, item]);
-          };
-          const removeAt = index => {};
-          const renderItems = renderItem =>
-            items.map((item, index) => {
-              const newContext = {
-                ...state,
-                functions: fieldArrayFunctions,
-                initialValues: initialValues && initialValues[fieldArrayName],
-                fields:
-                  (fields[fieldArrayName] && fields[fieldArrayName][index]) ||
-                  {},
-                values:
-                  (values[fieldArrayName] && values[fieldArrayName][index]) ||
-                  {},
-                initial:
-                  (initial[fieldArrayName] && initial[fieldArrayName][index]) ||
-                  {}
-              };
-
-              const remove = () => removeAt(index);
-
-              return (
-                <Context.Provider key={index} value={newContext}>
-                  {renderItem({ item, index, remove })}
-                </Context.Provider>
-              );
-            });
+          const fieldArrayFields = fields[fieldArrayName] || [];
+          const fieldArrayValues = values[fieldArrayName] || [];
+          const fieldArrayInitial = initial[fieldArrayName] || [];
+          // console.log({
+          //   items,
+          //   fields,
+          //   values,
+          //   initial,
+          //   bla: fieldArrayFields
+          // });
+          // console.log({
+          //   items,
+          //   fieldArrayFields,
+          //   fieldArrayValues,
+          //   fieldArrayInitial
+          // });
+          const {
+            insert,
+            append,
+            removeAt,
+            renderItems
+          } = this.memoizedGetHelperFunctions(
+            fieldArrayFunctions,
+            functions.changeFieldArray,
+            fieldArrayName,
+            items,
+            fieldArrayFields,
+            fieldArrayValues,
+            fieldArrayInitial,
+            enableReinitialize
+          );
 
           // TODO: optimize render?
-          return children({ items, insert, append, renderItems });
+          console.log('hoi');
+          return this.memoizedRender(
+            children,
+            items,
+            insert,
+            append,
+            renderItems
+          );
         }}
       </Context.Consumer>
     );

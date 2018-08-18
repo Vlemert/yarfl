@@ -13,7 +13,11 @@ class Form extends React.Component {
       return;
     }
 
-    this.setState(stateModifier);
+    this.setState(state => {
+      const after = stateModifier(state);
+      // console.log('dispatch', state, '------', after);
+      return after;
+    });
   };
 
   handleSubmit = e => {
@@ -119,6 +123,13 @@ class Form extends React.Component {
           true
         )
       );
+    },
+    changeFieldArray: (name, value) => {
+      this.dispatch(
+        actions.changeFieldArray(pathToArray(name), {
+          value
+        })
+      )
     }
   };
 
